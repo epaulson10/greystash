@@ -1,60 +1,63 @@
 <HTML>
 <HEAD>
-<TITLE> Welcome to my site</TITLE></HEAD>
+<TITLE> Generate Password</TITLE></HEAD>
 <BODY>
 <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js"></script>
 <script>
 <!--
 function genPass(x)
 {
-var url = getURL()
-x.url.value = getURL()
-var local = x.localKey.value
-var privKey = x.privateKey.value
+	var url = getURL()
+	x.url.value = getURL()
+	var local = x.localKey.value
+	var privKey = x.privateKey.value
  
-//big long string
-var toHash = url.concat(local, privKey)
+	//big long string
+	var toHash = url.concat(local, privKey)
 
-//creates a hex random number
-var hash = CryptoJS.SHA256(toHash)
-x.password.value = hash
-var hashStr = hash.toString()
-console.log(hashStr)
+	//creates a hex random number
+	var hash = CryptoJS.SHA256(toHash)
+	x.password.value = hash
+	var hashStr = hash.toString()
+	console.log(hashStr)
 
-//go from 64 hex nums to 16 hex pairs
-var hexPairs = hashStr.match(/\w{4}/g)
-var password = []
-for(i in hexPairs)
-{
-	var hex = hexPairs[i]
-	console.log(hex + "\n")
-	hex = parseInt(hex,16) //now is an int
-	console.log("\t" + hex + "\n")
+	//go from 64 hex nums to 16 hex groups
+	var hexPairs = hashStr.match(/\w{4}/g)
+	var password = []
 	
-	//convert each int to a character in a passowrd character
-	hex = hex%94
-	hex = hex + 33 
-	var chr = String.fromCharCode(hex)
-	console.log("\t" + chr + "\n")
-	password.push(chr)
-}
-password = password.join("")
-console.log(password)
-x.passwordGen.value = password
+	for(i in hexPairs)
+	{
+		var hex = hexPairs[i]
+		console.log(hex + "\n")
+		hex = parseInt(hex,16) //now is an int
+		console.log("\t" + hex + "\n")
+		
+		//convert each int to a character in a password character
+		hex = hex%94
+		hex = hex + 33 
+		var chr = String.fromCharCode(hex)
+		console.log("\t" + chr + "\n")
+		password.push(chr)
+	}
+	password = password.join("")
+	console.log(password)
+	x.passwordGen.value = password
 }
 
 
 //copied from http://www.codeproject.com/Tips/498368/Get-current-page-URL-using-JavaScript
 function getURL()
 {
-var currentPageUrl = "";
-if (typeof this.href === "undefined") {
-    currentPageUrl = document.location.toString().toLowerCase();
-}
-else {
-    currentPageUrl = this.href.toString().toLowerCase();
-}
-return currentPageUrl
+	var currentPageUrl = "";
+	if (typeof this.href === "undefined") 
+	{
+		currentPageUrl = document.location.toString().toLowerCase();
+	}
+	else 
+	{
+		currentPageUrl = this.href.toString().toLowerCase();
+	}
+	return currentPageUrl
 }
 
 
