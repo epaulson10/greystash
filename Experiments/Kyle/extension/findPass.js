@@ -1,4 +1,4 @@
-window.onload = function() {
+function turnPassRed() {
     var allPassFields = document.getElementsByTagName('input');
     var len = allPassFields.length;
     var input = null;
@@ -13,4 +13,9 @@ window.onload = function() {
             }
         }//for
     }
-};
+}
+
+//call when page is loaded and right now
+//that way one of them will probably work lol
+window.onload = turnPassRed;
+turnPassRed();
