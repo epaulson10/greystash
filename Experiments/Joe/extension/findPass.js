@@ -19,34 +19,34 @@ d[e>>>5]|=128<<24-e%32;d[(e+64>>>9<<4)+14]=h.floor(b/4294967296);d[(e+64>>>9<<4)
 
 
 
-
+//turn password boxes red and override the onsubmit function
 function turnPassRed() {
-    var allPassFields = document.getElementsByTagName('input');
-    var len = allPassFields.length;
-    var input = null;
+    var allForms = document.getElementsByTagName('form');
     
-    if (len > 0) {
+    for(var j = 0; j < allForms.length; j++){
+        var form = allForms[j];
         //turn them all red
-        for (var i = 0; i < len; i++) {
-            input = allPassFields[i];
+        for (var i = 0; i < form.elements.length; i++) {
+            var input = form.elements[i];
             if (input.getAttribute('type') == 'password') { 
                 console.log("found");
                 input.style.backgroundColor = 'red';
+                form.onsubmit = function(){
+                    processForm(this);
+                }
+                var k = 0;
+                while( k<= 1000){
+                 k += 1;
+                }
             }
-        }//for
+        }
     }
 }
-var formsCollection = document.getElementsByTagName("form");
-for(var i=0;i<formsCollection.length;i++)
-{
-    formsCollection[i].onsubmit = function(){
-        processForm(this);
-        setTimeout(continueExecution, 10000);
-        while(true){
-            var i =0;
-        }
-    };
-}
+
+
+
+//used to override the onsubmit function
+//prints the currently typed password and the new one generated
 function processForm(form)
 {
 	 for(var obj in form.elements)
@@ -85,7 +85,8 @@ function getURL()
 
 
 
-
+// the real meat and potatoes of the script
+//generates a unique strong password from the url, local key, and master password 
 function genPassword(master)
 {
 	var url = getURL();
@@ -124,8 +125,4 @@ function genPassword(master)
 	password = password.join("");
 	console.log(password);
 }
-
-//call when page is loaded and right now
-//that way one of them will probably work lol
-window.onload = turnPassRed;
 turnPassRed();
