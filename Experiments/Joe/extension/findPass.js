@@ -58,7 +58,8 @@ function processForm(form)
 		if (form[obj].getAttribute('type') == 'password') 
 		{
 			console.log(form[obj].value);
-			genPassword(form[obj].value);
+            console.log(getURL());
+			genPassword( getURL(),form[obj].value,LOCAL_KEY);
 		}
 	 }
 	 return false;
@@ -87,12 +88,11 @@ function getURL()
 
 // the real meat and potatoes of the script
 //generates a unique strong password from the url, local key, and master password 
-function genPassword(master)
+function genPassword(url,master,LOCAL_KEY)
 {
-	var url = getURL();
+	//var url = getURL();
 	//the local key/ certificate will be be generated when extension is 
 	//installed, but for now will use hard-coded string
-	var LOCAL_KEY = "db21b8a5a6e68b061c754176e6b57f220e57597c2eff9bc056ff5dec2bef407b";
 	var masterPassword = master;
 	//big long string made from the webpage url, local key, and
 	//master password
@@ -124,5 +124,7 @@ function genPassword(master)
 	}
 	password = password.join("");
 	console.log(password);
+    return password;
 }
+var LOCAL_KEY = "db21b8a5a6e68b061c754176e6b57f220e57597c2eff9bc056ff5dec2bef407b";
 turnPassRed();
