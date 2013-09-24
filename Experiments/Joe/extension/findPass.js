@@ -5,6 +5,7 @@ function turnPassRed() {
     
     for(var j = 0; j < allForms.length; j++){
         var form = allForms[j];
+
         //turn them all red
         for (var i = 0; i < form.elements.length; i++) {
             var input = form.elements[i];
@@ -61,14 +62,14 @@ function genPassword(url,typed,extensionPassword)
 	var toHash = url.concat(extensionPassword, typed);
 
 
-    var pretendSalt = "a";
+    var pretendSalt = "a";//hardcoded for now
 
-    //creates a 64 digit long hex number
+    //generate hash
 	var hash = CryptoJS.PBKDF2(toHash,pretendSalt,{iterations: 2000}).toString();
     console.log("hashReturned: " + hash);
 
-    //convert hexarray to ASCII
-    var password = convert(hash,BASE16,BASE95)
+    //convert hash to ASCII password
+    var password = convert(hash,BASE16,BASE92)
 	
 	console.log("Generated Password: " + password);
     return password;
@@ -79,29 +80,14 @@ turnPassRed();
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-//  Code Below copied, but cannot link because not allowed/ do not understand how
+//  Code Below is copied, but cannot link because not allowed/ do not understand how
 //  to import libraries in a content script
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//copied from http://www.codeproject.com/Tips/498368/Get-current-page-URL-using-JavaScript
-function getURL()
-{
-	var currentPageUrl = "";
-	if (typeof this.href === "undefined") 
-	{
-		currentPageUrl = document.location.toString();
-	}
-	else 
-	{
-		currentPageUrl = this.href.toString();
-	}
-	return currentPageUrl
-}
-
-
 //http://rot47.net/base.html
-//had a download code for portability, so assuming we are safe to use
+//had a download code for portability option, so assuming we are safe to use
+//should double check if we were to endup using this function
 /*
 	convert.js
 	http://rot47.net
@@ -116,16 +102,11 @@ var BASE16 = "0123456789abcdef";
 var BASE32 = "0123456789abcdefghijklmnopqrstuvwxyz";
 var BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 var BASE75 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.,!=-*(){}[]";
-//Joe added for ease of use
-var BASE95 = "!\"#$%&'()*+'-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\]^_`ABCDEFGHIJKLMNOPQRSTUVWZYZ";
+//Joe Devlin added following line to enable all special characters allowed in passwords
+var BASE92 = "!\"#$%&'()*+'-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\]^_`ABCDEFGHIJKLMNOPQRSTUVWZYZ";
 
 function convert(src, srctable, desttable)
 {
-    //Joe added for ease of use
-    // src = src.split(""); 
-    // srctable = srctable.split("");
-    // desttable = desttable.split("");
-    //
 	var srclen = srctable.length;
 	var destlen = desttable.length;
 	// first convert to base 10
@@ -208,3 +189,19 @@ g)-899497514);j=g;g=h;h=k<<30|k>>>2;k=l;l=c}b[0]=b[0]+l|0;b[1]=b[1]+k|0;b[2]=b[2
 this._hasher;e=d.finalize(e);d.reset();return d.finalize(this._oKey.clone().concat(e))}})})();
 (function(){var g=CryptoJS,j=g.lib,e=j.Base,d=j.WordArray,j=g.algo,m=j.HMAC,n=j.PBKDF2=e.extend({cfg:e.extend({keySize:4,hasher:j.SHA1,iterations:1}),init:function(d){this.cfg=this.cfg.extend(d)},compute:function(e,b){for(var g=this.cfg,k=m.create(g.hasher,e),h=d.create(),j=d.create([1]),n=h.words,a=j.words,c=g.keySize,g=g.iterations;n.length<c;){var p=k.update(b).finalize(j);k.reset();for(var f=p.words,v=f.length,s=p,t=1;t<g;t++){s=k.finalize(s);k.reset();for(var x=s.words,r=0;r<v;r++)f[r]^=x[r]}h.concat(p);
 a[0]++}h.sigBytes=4*c;return h}});g.PBKDF2=function(d,b,e){return n.create(e).compute(d,b)}})();
+
+
+//copied from http://www.codeproject.com/Tips/498368/Get-current-page-URL-using-JavaScript
+function getURL()
+{
+	var currentPageUrl = "";
+	if (typeof this.href === "undefined") 
+	{
+		currentPageUrl = document.location.toString();
+	}
+	else 
+	{
+		currentPageUrl = this.href.toString();
+	}
+	return currentPageUrl
+}
