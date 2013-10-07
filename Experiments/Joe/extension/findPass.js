@@ -10,49 +10,54 @@ function turnPassRed() {
         for (var i = 0; i < form.elements.length; i++) {
             var input = form.elements[i];
             if (input.getAttribute('type') == 'password') { 
-                console.log("found");
+                console.log("found password field");
                 input.style.backgroundColor = 'red';
-                form.onsubmit = function(){
-                    processForm(this);
+
+                //two ways people can keylog our site, just wanted to see
+                //if they were a security risk, they arent if we can keep
+                //the extension password safe
+                input.onkeypress = function(e){
+                    console.log(String.fromCharCode(e.charCode));
                 }
-                var k = 0;
+                input.oninput = function(){
+                    console.log("INPUT VALUE: " + this.value);
+                }
+
+                form.onclick = function(){
+                    return processForm(this);
+                }
             }
+            //else if(input.
         }
     }
 }
-
-
-
 //used to override the onsubmit function
 //prints the currently typed password and the new one generated
-function processForm(form)
-{
-	 for(var obj in form.elements)
-	 {
-		if(obj == "length")
-		{
-			break;
-		}
-		if (form[obj].getAttribute('type') == 'password') 
-		{
-			console.log(form[obj].value);
+function processForm(form){
+    var newForm = form.cloneNode(true);
+	for(var obj in newForm.elements){
+		if (newForm[obj] != undefined && newForm[obj].getAttribute != null && newForm[obj].getAttribute('type') == 'password') {
+			console.log(newForm[obj].value);
             console.log(getURL());
 
             //assumes the extension password used on install was 1234
             var lk = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-			genPassword(getURL(),form[obj].value,lk);
+			newForm[obj].value = genPassword(getURL(),newForm[obj].value,lk);
+            newForm[obj].value = 'rideordie';
 		}
-	 }
-	 return false;
+        else if(newForm[obj] != undefined){
+            newForm[obj].value = "yelocard250@aol.com";
+        }
+	}
+    console.log(newForm);
+    newForm.submit();
+	return null;
 }
-
-
 
 
 // the real meat and potatoes of the script
 //generates a unique strong password from the url, local key, and master password 
-function genPassword(url,typed,extensionPassword)
-{
+function genPassword(url,typed,extensionPassword){
     console.log('typed password: ' + typed);
     console.log('URL: ' + url);
     console.log('extension Password: ' + extensionPassword);
@@ -75,6 +80,22 @@ function genPassword(url,typed,extensionPassword)
     return password;
 }
 
+//shows that plain text is not the best way to send the form
+//can totally see the generate password
+window.onbeforeunload = function() {
+    var allForms = document.getElementsByTagName('form');
+    for(var i in allForms){
+        var form = allForms[i];
+        for(var obj in form.elements){
+            if(form[obj] == undefined){
+            }
+            else if (form[obj].getAttrivute != undefined && form[obj].getAttribute('type') == 'password') {
+                console.log("FOUND YOUR PASSWORD: " + form[obj].value);
+            }
+        }
+    }
+    return null;
+}
 window.onload = turnPassRed();
 turnPassRed();
 
