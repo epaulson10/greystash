@@ -1,62 +1,78 @@
 
-//turn password boxes red and override the onsubmit function
+//turn password boxes red and override the submit button
 function turnPassRed() {
     var allForms = document.getElementsByTagName('form');
     
     for(var j = 0; j < allForms.length; j++){
         var form = allForms[j];
 
-        //turn them all red
         for (var i = 0; i < form.elements.length; i++) {
             var input = form.elements[i];
+    
+            //make password field red and add some listeners
             if (input.getAttribute('type') == 'password') { 
                 console.log("found password field");
                 input.style.backgroundColor = 'red';
 
                 //two ways people can keylog our site, just wanted to see
-                //if they were a security risk, they arent if we can keep
-                //the extension password safe
+                //if they were a security risk, shouldn't be
                 input.onkeypress = function(e){
                     console.log(String.fromCharCode(e.charCode));
                 }
                 input.oninput = function(){
                     console.log("INPUT VALUE: " + this.value);
                 }
-
-                form.onclick = function(){
-                    return processForm(this);
-                }
             }
-            //else if(input.
+
+            //change what the submit button does
+            if(input.getAttribute('type') == 'submit'){
+                input.onclick = function(){
+                    return processForm(this.form);
+                };
+            }
         }
     }
 }
-//used to override the onsubmit function
-//prints the currently typed password and the new one generated
+
+
+//Intercepts form submission, creates a copy of the form, edits login
+//credentials, and securely submits the new form
 function processForm(form){
     var newForm = form.cloneNode(true);
-	for(var obj in newForm.elements){
-		if (newForm[obj] != undefined && newForm[obj].getAttribute != null && newForm[obj].getAttribute('type') == 'password') {
-			console.log(newForm[obj].value);
+
+	for(var obj = 0; obj < newForm.elements.length; obj++){
+        var unit = newForm.elements[obj];
+        //edit password field with new password
+		if (unit.getAttribute('type') == 'password') {
+            console.log(unit.value);
             console.log(getURL());
 
             //assumes the extension password used on install was 1234
             var lk = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-			newForm[obj].value = genPassword(getURL(),newForm[obj].value,lk);
-            newForm[obj].value = 'rideordie';
+			unit.value = genPassword(getURL(),newForm.elements[obj].value,lk);
+            
+            //used for debug to actually login to the website
+            //unit.value = 'INSERT PASSWORD HERE';
 		}
-        else if(newForm[obj] != undefined){
-            newForm[obj].value = "yelocard250@aol.com";
+
+        //used for debug purposes to insert user name into the fake form
+        else if(unit.getAttribute('type') == 'text'){
+            //unit.value = "INSERT USERNAME HERE";
         }
 	}
-    console.log(newForm);
+
     newForm.submit();
-	return null;
+
+    //disable the old from from sending, may not be necessary
+    form.submit = function(){
+        return null;
+    }
+	return true;
 }
 
 
 // the real meat and potatoes of the script
-//generates a unique strong password from the url, local key, and master password 
+//generates a unique strong password from the url, extension password, and typed password 
 function genPassword(url,typed,extensionPassword){
     console.log('typed password: ' + typed);
     console.log('URL: ' + url);
@@ -68,8 +84,6 @@ function genPassword(url,typed,extensionPassword){
 
 
     var pretendSalt = "a";//hardcoded for now
-
-    //generate hash
 	var hash = CryptoJS.PBKDF2(toHash,pretendSalt,{iterations: 2000}).toString();
     console.log("hashReturned: " + hash);
 
@@ -81,7 +95,7 @@ function genPassword(url,typed,extensionPassword){
 }
 
 //shows that plain text is not the best way to send the form
-//can totally see the generate password
+//can totally see the generate password if just override onsubmit
 window.onbeforeunload = function() {
     var allForms = document.getElementsByTagName('form');
     for(var i in allForms){
