@@ -1,18 +1,25 @@
 var passwordField = null;
+var key = "7547AC94 5855588B 5A18D06C 144FE94E"
 
+// Display what was saved in local storage then decrypt it
+function showMe() {
+    chrome.storage.local.get('secretPass', function(result) {
+        var stored = result.secretPass;
+        console.log('Found: ' + stored);
+        alert('You saved: ' + sjcl.decrypt(key, stored));
+    });
+}
+
+// Encrypt the text entered into the password field and save it to local storage
 function saveIt() {
     if (passwordField) {
-        var typedPass = passwordField.value;
-        alert('User typed: ' + typedPass);
-        //save it
-        chrome.storage.local.set({'key': typedPass});
-        //get the saved value back
-        chrome.storage.local.get('key', function(result) {
-            alert('Found: ' + result.key);
-        });        
+        console.log('Saved: ' + passwordField.value)
+        var encrypted = sjcl.encrypt(key, passwordField.value);
+        chrome.storage.local.set({'secretPass': encrypted}, showMe());
     }
 }
 
+// Find all password fields, color them red, and add event listener to the submit button
 function turnPassRed() {
     var allPassFields = document.getElementsByTagName('input');
     var len = allPassFields.length;
@@ -32,8 +39,6 @@ function turnPassRed() {
             }
         }//for
     }
-
-
 }
 
 //call when page is loaded and right now
