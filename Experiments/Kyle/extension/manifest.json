@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+
+    "name": "Password Finder",
+    "description": "Finds password fields and marks them.",
+    "version": "0.1",
+
+    "content_scripts": [
+      {
+        "matches": ["https://*/*"],
+        "js": ["findPass.js"]
+      }
+    ],
+    "browser_action": {
+        "default_icon": "icon.png"
+    }
+}
