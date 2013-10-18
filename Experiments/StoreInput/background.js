@@ -40,6 +40,10 @@ chrome.runtime.onMessage.addListener(
                
     console.log(callingScriptMessage);
 
-    if (callingScriptMessage.greeting == "hello")
-      sendResponse({farewell: "goodbye"});
+    if (callingScriptMessage.greeting == "hello"){
+        sendResponse({farewell: "goodbye"});
+    }    
+    if (callingScriptMessage.greeting == "WTF!?"){
+        sendResponse({farewell: "?TFW"});
+    }
   });

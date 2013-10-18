@@ -58,14 +58,14 @@ Greystash.instrumentPopup = function()
 	{ 	
 		inputForm.style.backgroundColor = 'red';
 		
-		inputForm.addEventListener('submit', function() { 
+		submitForm.onclick =function(){ 
 
 			// TODO: This part is not working for me.  I cannot seem to 
 			// get anything to happen when I submit the form.
 			chrome.runtime.sendMessage({greeting: "WTF!?"}, function(response) {
   				console.log(response.farewell);
 			});
-		});
+		};
 	}
 }
 
