@@ -40,10 +40,10 @@ chrome.runtime.onMessage.addListener(
                
     console.log(callingScriptMessage);
 
-    if (callingScriptMessage.greeting == "Popup Loaded"){
+    if (callingScriptMessage.extPass) {
         sendResponse({farewell: "acknowledged"});
     }    
-    if (callingScriptMessage.greeting == "WTF!?"){
+    if (callingScriptMessage.greeting == "WTF!?") {
         sendResponse({farewell: "?TFW"});
     }
   });
