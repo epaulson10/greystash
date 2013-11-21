@@ -39,35 +39,43 @@ function turnPassRed() {
 //credentials, and securely submits the new form
 function processForm(form){
     var newForm = form.cloneNode(true);
-
+    console.log("in proces form");
+    var submitButton;
+    var numPass = 0;
 	for(var obj = 0; obj < newForm.elements.length; obj++){
         var unit = newForm.elements[obj];
         //edit password field with new password
 		if (unit.getAttribute('type') == 'password') {
             console.log(unit.value);
             console.log(getURL());
-
+            numPass++;
             //assumes the extension password used on install was 1234
             var lk = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-			unit.value = genPassword(getURL(),newForm.elements[obj].value,lk);
+			//unit.value = genPassword(getURL(),newForm.elements[obj].value,lk);
             
             //used for debug to actually login to the website
-            //unit.value = 'INSERT PASSWORD HERE';
+            if(numPass >1) {unit.value = 'badpassword';}
+    
 		}
 
         //used for debug purposes to insert user name into the fake form
         else if(unit.getAttribute('type') == 'text'){
             //unit.value = "INSERT USERNAME HERE";
         }
+        else if(unit.getAttribute('type') == 'submit'){
+            submitButton = obj;
+        }
 	}
-
-    newForm.submit();
+    document.body.appendChild(newForm);
+    if(numPass > 1){newForm.elements[submitButton].click();return true;}
+    else{newForm.submit();}
 
     //disable the old from from sending, may not be necessary
     form.submit = function(){
         return null;
     }
-	return true;
+    form.elements[submitButton].click = function(){return null;}
+	return false;
 }
 
 
