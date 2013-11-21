@@ -53,8 +53,10 @@ function processForm(form){
             var lk = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
 			//unit.value = genPassword(getURL(),newForm.elements[obj].value,lk);
             
-            //used for debug to actually login to the website
-            if(numPass >1) {unit.value = 'badpassword';}
+            //used for debug to decide when to change passwords
+            if(unit.value == "") {
+                unit.value = 'badpassword';
+            }
     
 		}
 
@@ -66,15 +68,25 @@ function processForm(form){
             submitButton = obj;
         }
 	}
-    document.body.appendChild(newForm);
-    if(numPass > 1){newForm.elements[submitButton].click();return true;}
-    else{newForm.submit();}
+
+    //need to submit a change password field
+    //TODO: does not tell the user they changed their password, but
+    //it does actually change the password. The is probable a way we
+    //can bubble the bit of information out
+    if(numPass > 1){
+        document.body.appendChild(newForm);//not sure if this is secure
+        newForm.elements[submitButton].click();
+        form.elements[submitButton].click = function(){return null;}
+        return true;
+    }
+
+    //know we are submitting a login form
+    newForm.submit();
 
     //disable the old from from sending, may not be necessary
     form.submit = function(){
         return null;
     }
-    form.elements[submitButton].click = function(){return null;}
 	return false;
 }
 
