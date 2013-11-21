@@ -1,6 +1,16 @@
+/*
+ * password.js
+ *
+ * Generates secure passwords. This includes getting all relevant parameters
+ * such as the extension password and canonical URL.
+ *
+ * @authors Kyle DeFrancia, Erik Paulson
+ * @version 11/20/13
+ *
+ */
 
-//Is this the correct namespace? -ep
-password = password || {};
+var greystash = greystash || {};
+
 
 /*
  * getCanonicalURL()
@@ -10,15 +20,36 @@ password = password || {};
  * 
  * @return A string containing the canonical url of the website
  */
- password.getCanonicalURL = function(){
- }
- 
+greystash.getCanonicalURL = function() {
+    return 'meow';
+}
+
+
 /*
  * getExtPassword()
  *
+ * Sends a message to the background page asking for the extension password.
  * 
+ * @param callback Callback function that uses the extension password
  */
-  
+greystash.getExtPass = function(callback) {
+    chrome.runtime.sendMessage({getExtPass: 'please'}, callback);
+}
+
+
+/*
+ * getStalePass()
+ * 
+ * Sends a message to the background page asking for the stale extension
+ * password for a given website.
+ * 
+ * @param url The canonical url of the website
+ */
+greystash.getStalePass = function(url, callback){
+    chrome.runtime.sendMessage({getStalePass: url}, callback);
+}
+
+
 /*
  * generatePassword()
  * 
@@ -31,26 +62,29 @@ password = password || {};
  *
  * @return A string containing the generated password
  */
-password.generatePassword = function(url, simplePass, extPass){
+greystash.generatePassword = function(url, simplePass, extPass){
     //Concat big string
     //P2BKFS
     //Convert to base
     //Check rules
 }
 
+
 /*
  * convertBase()
  * 
- * I don't understand this enought to document it. Joe can you do this? -ep
+ * Converts a string whose characters are in one base to another base
+ * (this doesn't make sense, I don't know exactly what it should say)
  *
- * @param 
- * @param 
- * @param 
+ * @param input The string to change the base of
+ * @param origBase The set of characters that make up the current base
+ * @param newBase  The set of characters that make up the new base
  *
  * @return A string 
  */
-password.convertBase = function(passString, origBase, newBase){
+greystash.convertBase = function(input, origBase, newBase){
 }
+
 
 /*
  * checkRule()
@@ -62,20 +96,8 @@ password.convertBase = function(passString, origBase, newBase){
  *
  * @return true if the generated password fits the site's rules, false otherwise
  */
-password.checkRule = function(url){
-}
-
-/*
- * getStalePass()
- * 
- * Determines whether the generated password conforms to a certain website's
- * password requirements.
- *
- * @param url The canonical url of the website being examined
- *
- * @return true if the generated password fits the site's rules, false otherwise
- */
-password.checkRule = function(url){
+greystash.checkRule = function(url){
+    return true
 }
 
 
