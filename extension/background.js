@@ -1,19 +1,32 @@
 /*
  * background.js
  *
- * Background page for experimental extension.  
+ * Background page for Greystash extension.  Handles retrieving the extension
+ * password, responding to messages from the content scripts, and initializing
+ * the injection routine whenever a tab updates in the browser.  
  * 
- * 1. Instrument the browsers tabs with a listener.
- * 
- * 2. Log or respond to messages sent by the content script.  
+ * @authors Kyle DeFrancia, Tanya L. Crenshaw
+ * @version 11/21/2013
  *
- * @author Tanya L. Crenshaw
- * @since 10/14/2013
  */
+
+var greystash = greystash || {};
+
+
+/*
+ * getExtPass()
+ *
+ * Retrieves the saved extension password from the filesystem.
+ *
+ * @return A string containing the extension password
+ */
+greystash.getExtPass = function() {
+    return 'gato';
+}
 
 
 // Add a listener such that whenever a tab is updated in Chrome,
-// the page is instrumented according to our instrumentPage()
+// the page is instrumented according to our initInjection()
 // content script function.
 
 // TODO: Need to correct this listener so that it doesn't 
@@ -22,7 +35,7 @@
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
     if (changeInfo.status === 'complete') {
         chrome.tabs.executeScript(tabId, {
-            code: ' Greystash.instrumentPage(); ' 
+            code: ' greystash.initInjection(); ' 
         });
     }
 });
@@ -40,10 +53,10 @@ chrome.runtime.onMessage.addListener(
                
     console.log(callingScriptMessage);
 
-    if (callingScriptMessage.greeting == "Popup Loaded"){
+    if (callingScriptMessage.extPass) {
         sendResponse({farewell: "acknowledged"});
     }    
-    if (callingScriptMessage.greeting == "WTF!?"){
+    if (callingScriptMessage.greeting == "WTF!?") {
         sendResponse({farewell: "?TFW"});
     }
   });

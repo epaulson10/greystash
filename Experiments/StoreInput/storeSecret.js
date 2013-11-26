@@ -3,23 +3,20 @@
  *
  * Content script for experimental extension.  
  * 
- * This experiment currently explores the relationship between
- * the extension's content script, the extension's popup page, 
- * the browser's current tab, and the extension's background
- * page.  
+ * This experiment currently explores the relationship between the
+ * extension's content script, the extension's popup page, the
+ * browser's current tab, and the extension's background page.
  * 
- * To test this code, point the browser at some page that has
- * a password form.  The form should turn red.  Click on the
- * Purple P icon for the extension to reveal the popup for
- * the extension; the extension's password form should turn
- * red.
+ * To test this code, point the browser at some page that has a
+ * password form.  The form should turn red.  Click on the Purple P
+ * icon for the extension to reveal the popup for the extension; the
+ * extension's password form should turn red.  After clicking the
+ * "submit" button on the popup page, the master password shall be
+ * logged to the popup console and and message sent to the background
+ * page.
  * 
- * Currently working on: Trying to extract the password from
- * the extension popup page, but I'm having trouble adding
- * the correct event listener.  See the TODO on line 62 of this
- * file.
  *
- * @author Tanya L. Crenshaw
+ * @author Team Failing
  * @since 10/13/2013
  */
 
@@ -56,20 +53,24 @@ Greystash.instrumentPopup = function()
 
 	if(!(inputForm === null))
 	{ 	
-		inputForm.style.backgroundColor = 'red';
+	    inputForm.style.backgroundColor = 'red';
 		
-		submitForm.onclick =function(){ 
-            console.log(inputForm.value);
-			// TODO: This part is not working for me.  I cannot seem to 
-			// get anything to happen when I submit the form.
-            //JD: I think this should be fixed now, but it unfortunately triggers of onclick
-			chrome.runtime.sendMessage({greeting: "WTF!?"}, function(response) {
-  				console.log(response.farewell);
-			});
-		};
+	    // Alter the submit form's onclick behaviour to
+	    // send a WTF message to the background page.  
+	    submitForm.onclick =function(){ 
+
+		// This shall be logged to the popup's console.
+		console.log(inputForm.value);
+
+		// This shall be sent to the background page.  A
+		// response will be issued by the background page.
+		chrome.runtime.sendMessage({greeting: "User submitted a master password"}, function(response) {
+  		    console.log(response.farewell);
+
+		});
+	    };
 	}
 }
-
 
 /*
  * instrumentPage()
@@ -80,27 +81,27 @@ Greystash.instrumentPopup = function()
  */
 Greystash.instrumentPage = function()
 { 
-	console.log('Page Instrumented.');
-	
-	// Grab all of the forms on the page.
-	var allForms = document.getElementsByTagName('form');
-
-	// Search through all the forms on the page, looking for the 
-	// password input and the submit button.      
+    console.log('Page Instrumented.');
+    
+    // Grab all of the forms on the page.
+    var allForms = document.getElementsByTagName('form');
+    
+    // Search through all the forms on the page, looking for the 
+    // password input and the submit button.      
     for(var j = 0; j < allForms.length; j++){
         var form = allForms[j];
-
+	
         for (var i = 0; i < form.elements.length; i++) {
             var input = form.elements[i];
-    
-			// Alter the display rules for the password input
-			// and alter the submit listener
+	    
+	    // Alter the display rules for the password input
+	    // and alter the submit listener
             if (input.getAttribute('type') == 'password') { 
                 console.log("Found password field");
                 console.log(input);
                 input.style.backgroundColor = 'red';
             }
-
+	    
             //change what the submit button does
             if(input.getAttribute('type') == 'submit'){
                 input.onclick = function(){
@@ -123,7 +124,7 @@ console.log('My extension id is: ' + Greystash.ExtensionId);
 //
 // For guidance on this approach, 
 // See: https://developer.chrome.com/extensions/messaging.html
-chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+chrome.runtime.sendMessage({greeting: "Popup Loaded"}, function(response) {
   console.log(response.farewell);
 });
 
