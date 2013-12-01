@@ -43,8 +43,8 @@ greystash.getPassword = function(url) {
  *
  * @return True if the write was successfull or false if it wasn't 
  */
-// greystash.storePassword = function(url, text) {
-    // if(url == null){
-        // chrome.storage.local.set({greystash.EXTPASSWORD: newStr.value});
-    // }
-// }
+greystash.storePassword = function(url, text) {
+    if(url == null){
+        chrome.storage.local.set({"foo": text},function(){});
+    }
+};

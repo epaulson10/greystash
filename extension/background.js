@@ -70,8 +70,3 @@ chrome.runtime.onMessage.addListener(
         sendResponse({farewell: "looks like we forgot a case"});
     }
   });
-greystash.storePassword = function(url, text) {
-    if(url == null){
-        chrome.storage.local.set({"foo": text},function(){});
-    }
-};
