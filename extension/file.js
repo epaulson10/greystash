@@ -6,14 +6,16 @@
  *
  * @authors Kyle DeFrancia
  * @version 11/21/13
+ * @version 12/1/13 updated get and store password to use the chrome local storage
  *
  */
 
 var greystash = greystash || {};
 
+greystash.EXTPASSWORD = "keyForExtensionPasswrd";
 
 /*
- * specialRead()
+ * getPassword()
  *
  * Reads either the extension password from file or a stale password
  * for a given URL.
@@ -23,13 +25,15 @@ var greystash = greystash || {};
  *
  * @return A string representing the extension or stale password
  */
-greystash.specialRead = function(url) {
-    return 'cats';
+greystash.getPassword = function(url) {
+    if(url == null){
+        chrome.storage.local.get(greystash.EXTPASSWORD, function(data){
+            sendResponse({farewell: data});//have to send response from here b/c asyn request
+        };
+    }
 }
-
-
 /*
- * specialWrite()
+ * storeWrite()
  *
  * Writes extension password or a stale password for a given URL to file.
  *
@@ -39,6 +43,8 @@ greystash.specialRead = function(url) {
  *
  * @return True if the write was successfull or false if it wasn't 
  */
-greystash.specialRead = function(url) {
-    return true;
-}
+// greystash.storePassword = function(url, text) {
+    // if(url == null){
+        // chrome.storage.local.set({greystash.EXTPASSWORD: newStr.value});
+    // }
+// }

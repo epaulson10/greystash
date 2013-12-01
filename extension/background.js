@@ -11,7 +11,7 @@
  */
 
 var greystash = greystash || {};
-
+//var greystash.EXTPASSWORD = "keyForExtensionPasswrd";
 
 /*
  * getExtPass()
@@ -53,10 +53,25 @@ chrome.runtime.onMessage.addListener(
                
     console.log(callingScriptMessage);
 
-    if (callingScriptMessage.extPass) {
-        sendResponse({farewell: "acknowledged"});
+    if (callingScriptMessage.changeExtPass) {
+        //null means want to store extension password
+        greystash.storePassword(null, callingScriptMessage.changeExtPass);
+        sendResponse({farewell: "changed extension password"});
+    }     
+    else if (callingScriptMessage.getExtPass) {
+        //null means want to store extension password
+        greystash.getPassword(null);
+        //sendResponse({farewell: "changed extension password"});
     }    
-    if (callingScriptMessage.greeting == "WTF!?") {
+    else if (callingScriptMessage.greeting == "WTF!?") {
         sendResponse({farewell: "?TFW"});
     }
+    else{
+        sendResponse({farewell: "looks like we forgot a case"});
+    }
   });
+greystash.storePassword = function(url, text) {
+    if(url == null){
+        chrome.storage.local.set({"foo": text},function(){});
+    }
+};

@@ -36,7 +36,7 @@ greystash.initPopup = function() {
 
             // This shall be sent to the background page.  A
             // response will be issued by the background page.
-            chrome.runtime.sendMessage({extPass: inputForm.value}, function(response) {
+            chrome.runtime.sendMessage({changeExtPass: inputForm.value}, function(response) {
                   console.log(response.farewell);
             });
         };
