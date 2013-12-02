@@ -12,8 +12,6 @@
 
 var greystash = greystash || {};
 
-greystash.EXTPASSWORD = "keyForExtensionPasswrd";
-
 /*
  * getPassword()
  *
@@ -25,11 +23,11 @@ greystash.EXTPASSWORD = "keyForExtensionPasswrd";
  *
  * @return A string representing the extension or stale password
  */
-greystash.getPassword = function(url) {
+greystash.getPassword = function(url,sendResponse) {
     if(url == null){
-        chrome.storage.local.get(greystash.EXTPASSWORD, function(data){
-            sendResponse({farewell: data});//have to send response from here b/c asyn request
-        };
+        chrome.storage.sync.get("foo", function(data){
+            sendResponse({farewell: data.foo});//I think I have  a foo fetish, we should change this
+        });
     }
 }
 /*
@@ -43,8 +41,10 @@ greystash.getPassword = function(url) {
  *
  * @return True if the write was successfull or false if it wasn't 
  */
-greystash.storePassword = function(url, text) {
+greystash.storePassword = function(url, text,sendResponse) {
     if(url == null){
-        chrome.storage.local.set({"foo": text},function(){});
+        chrome.storage.sync.set({"foo": text},function(){
+            sendResponse({farewell: "Actually stored password " + text});
+        });
     }
 };

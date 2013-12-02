@@ -50,7 +50,7 @@ greystash.isStale = function(url) {
  * 
  * @return A string representing the stale password for the site
  */
-greystash.getStalePass() {
+greystash.getStalePass = function(){
 }
 
 

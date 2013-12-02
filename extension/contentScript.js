@@ -74,7 +74,36 @@ greystash.initInjection = function() {
  * @param form The login form being submitted
  */
 greystash.processForm = function(form) {
-    console.log(form);    
+    console.log(form);
+    var typedPass = "";
+    //grab typed password
+    for(var obj = 0; obj < form.elements.length; obj++){
+        var unit = form.elements[obj];
+        //edit password field with new password
+		if (unit.getAttribute('type') == 'password') {
+            typedPass = unit.value;
+        }
+    }
+
+    //for now assume we are only talking about a static extension password
+    greystash.getExtPass(function(response){
+        //get all the parts to make a password
+        var extPass = response.farewell;
+        var url = greystash.getCanonicalURL();
+
+        //print for debug
+        console.log("extPass: " + extPass);
+        console.log("url: " + url);
+        console.log("typed: " + typedPass);
+    
+        var genPass = greystash.generatePassword(url,typedPass,extPass);
+
+        //now would inject new password into the form
+
+        //send the form with new password
+        form.submit();
+    });
+    return false;//makes it so we don't submit before we are ready
 }
 
 

@@ -55,13 +55,13 @@ chrome.runtime.onMessage.addListener(
 
     if (callingScriptMessage.changeExtPass) {
         //null means want to store extension password
-        greystash.storePassword(null, callingScriptMessage.changeExtPass);
-        sendResponse({farewell: "changed extension password"});
+        greystash.storePassword(null, callingScriptMessage.changeExtPass, sendResponse);
+        return true;//allows for async response
     }     
     else if (callingScriptMessage.getExtPass) {
         //null means want to store extension password
-        greystash.getPassword(null);
-        //sendResponse({farewell: "changed extension password"});
+        greystash.getPassword(null,sendResponse);
+        return true;//allows for async response
     }    
     else if (callingScriptMessage.greeting == "WTF!?") {
         sendResponse({farewell: "?TFW"});
