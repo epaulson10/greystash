@@ -6,8 +6,9 @@
  * secure password has been generated, the content script can submit the login
  * form with the secure password to the website.
  *
- * @author Kyle DeFrancia, Joey Devlin, Erik Paulson, Tanya Crenshaw
+ * @author Kyle DeFrancia, Joe Devlin, Erik Paulson, Tanya Crenshaw
  * @version 11/21/2013
+ * @version 12/1/2013
  */
 
 // Create a namespace for this extension.
@@ -161,8 +162,3 @@ greystash.checkStale = function(url) {
 greystash.confirmStalePassChange = function() {
     alert('Did you change your password yet??');
 }
-
-
-// Begin logging by logging the ID of this extension.
-greystash.ExtensionId = chrome.runtime.id;
-console.log('My extension id is: ' + greystash.ExtensionId);

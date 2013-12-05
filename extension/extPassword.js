@@ -3,7 +3,7 @@
  *
  * Keeps track of stale passwords when the extension password is changed.
  *
- * @authors Kyle DeFrancia
+ * @authors Kyle DeFrancia, Joe Devlin, Erik Paulson
  * @version 11/21/13
  *
  */

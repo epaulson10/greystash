@@ -4,8 +4,9 @@
  * Generates secure passwords. This includes getting all relevant parameters
  * such as the extension password and canonical URL.
  *
- * @authors Kyle DeFrancia, Erik Paulson
+ * @authors Kyle DeFrancia, Erik Paulson, Joe Devlin
  * @version 11/20/13
+ * @version 12/1/13 - added the logic to generate a password
  *
  */
 
@@ -28,6 +29,8 @@ greystash.getCanonicalURL = function() {
 		url = this.href.toString();
 	}
     var re = /^.*[\.\/](.*\.(com|edu|net|org)).*$/
+
+    //compress website like www.pilots.up.edu/stuff/more_stuff to up.edu
     url = url.replace(re,function(match, p1){return p1});
     url =  url.toLowerCase();
 
@@ -54,6 +57,7 @@ greystash.getExtPass = function(callback) {
  * password for a given website.
  * 
  * @param url The canonical url of the website
+ * @param callback the function to call when the extension password is returned
  */
 greystash.getStalePass = function(url, callback){
     chrome.runtime.sendMessage({getStalePass: url}, callback);
@@ -80,13 +84,16 @@ greystash.generatePassword = function(url,typed,extensionPassword){
 
 
     var pretendSalt = "a";//hardcoded for now
-	var hash = sjcl.misc.pbkdf2(toHash, pretendSalt, 2000, 18*2).toString();
+	var bitArray = sjcl.misc.pbkdf2(toHash, pretendSalt, 2000, 110);//200 = loop count 110 = num bits for key
+    //convert bit array to a hex number
+    var hash = sjcl.codec.hex.fromBits(bitArray);
     console.log("hashReturned: " + hash);
 
     //convert hash to ASCII password
     var password = greystash.convertBase(hash,BASE16,BASE92);
 	
 	console.log("Generated Password: " + password);
+
     //TODO: add a check to make sure it works with the website rules and
     //loop again if it does not match
 

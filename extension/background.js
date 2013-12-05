@@ -5,7 +5,7 @@
  * password, responding to messages from the content scripts, and initializing
  * the injection routine whenever a tab updates in the browser.  
  * 
- * @authors Kyle DeFrancia, Tanya L. Crenshaw
+ * @authors Kyle DeFrancia, Tanya L. Crenshaw, Joe Devlin, Erik Paulson
  * @version 11/21/2013
  *
  */
@@ -17,7 +17,7 @@ var greystash = greystash || {};
  * getExtPass()
  *
  * Retrieves the saved extension password from the filesystem.
- *
+ * 
  * @return A string containing the extension password
  */
 greystash.getExtPass = function() {
@@ -42,9 +42,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
 
 
 // Add a listener to the background page, such that whenever
-// it receives a message from the content script, it 
-// logs the message and, in the case of "hello", sends
-// a response.
+// it receives a message from the content script, and make the
+// appropriate action
 chrome.runtime.onMessage.addListener(
   function(callingScriptMessage, sender, sendResponse) {
     console.log(sender.tab ?

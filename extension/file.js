@@ -4,7 +4,7 @@
  * Handles reading and writing to a sandboxed area of the local filesystem
  * using the Chrome Filesystem API.
  *
- * @authors Kyle DeFrancia
+ * @authors Kyle DeFrancia, Joe Devlin
  * @version 11/21/13
  * @version 12/1/13 updated get and store password to use the chrome local storage
  *

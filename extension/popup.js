@@ -4,7 +4,7 @@
  * Handles submitting an extension password to the extension from the page
  * action popup.
  *
- * @authors Kyle DeFrancia, Tanya Crenshaw
+ * @authors Kyle DeFrancia, Tanya Crenshaw, Joe Devlin, Erik Paulson
  * @version 11/19/13
  *
  */
