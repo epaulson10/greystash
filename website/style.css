@@ -1,0 +1,8 @@
+* {
+    font-family: proxima-nova, sans-serif;
+}
+
+#output {
+    display: inline-block;
+    background: #F08080;
+}
