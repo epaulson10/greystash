@@ -22,24 +22,26 @@ greystash.initPopup = function() {
 
     console.log('Popup Instrumented.');
 
-    var inputForm = document.getElementById("password");
-    var submitForm = document.getElementById("signIn");
+    var extPassInput = document.getElementById('password');
+    var submitForm = document.getElementById('signIn');
 
-    if(!(inputForm === null)) {     
-
+    if ((extPassInput !== null) && (submitForm !== null)) {     
         // Alter the submit form's onclick behaviour to
         // send a  message to the background page.  
         submitForm.onclick = function(){ 
+            console.log('submit form: ' + extPassInput.value);
 
-            // This shall be logged to the popup's console.
-            console.log(inputForm.value);
-
-            // This shall be sent to the background page.  A
-            // response will be issued by the background page.
-            chrome.runtime.sendMessage({changeExtPass: inputForm.value}, function(response) {
-                  console.log(response.farewell);
-            });
+            if (extPassInput.value) {
+                // send a request to the background page to change the extension pass
+                chrome.runtime.sendMessage({changeExtPass: extPassInput.value}, function(response) {
+                      console.log(response.farewell);
+                });
+            } else {
+                var err = document.getElementById('error');
+                err.textContent = 'Please enter a password'; 
+            }
         };
+
     }//if
 }
 
