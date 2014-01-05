@@ -8,12 +8,12 @@
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
-        "js": ["popup.js","contentScript.js", "password.js", "sjcl.js"]
+        "js": ["contentScript.js"]
       }
     ],
 
     "background": {
-	"scripts": ["background.js","file.js","extPassword.js"]
+      "scripts": ["background.js", "file.js", "extPassword.js", "password.js", "sjcl.js"]
     },
 
     "permissions": [
@@ -27,7 +27,7 @@
     ],
 
     "browser_action": {
-        "default_icon": "cat.png",
-	"default_popup": "popup.html"
+      "default_icon": "cat.png",
+      "default_popup": "popup.html"
     }
 }

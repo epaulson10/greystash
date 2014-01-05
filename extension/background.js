@@ -32,40 +32,53 @@ greystash.getExtPass = function() {
 // TODO: Need to correct this listener so that it doesn't 
 // try to alter the chrome://extensions and other such tabs.
 // Doing so throws an error to the console.
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+greystash.initPage = function(tabId, changeInfo) {
     if (changeInfo.status === 'complete') {
         chrome.tabs.executeScript(tabId, {
             code: ' greystash.initInjection(); ' 
         });
     }
-});
+}
+chrome.tabs.onUpdated.addListener(greystash.initPage);
 
 
 // Add a listener to the background page, such that whenever
 // it receives a message from the content script, and make the
 // appropriate action
-chrome.runtime.onMessage.addListener(
-  function(callingScriptMessage, sender, sendResponse) {
+greystash.messageHandler = function(callingScriptMessage, sender, sendResponse) {
     console.log(sender.tab ?
                 "from a content script:" + sender.tab.url :
                 "from the extension");
-               
     console.log(callingScriptMessage);
 
-    if (callingScriptMessage.changeExtPass) {
+    if (callingScriptMessage.generatePass) {
+        var params = callingScriptMessage.generatePass;
+        var url = greystash.getCanonicalURL(params.url);
+
+        greystash.getPassword(null, function(passFound) {
+            var extPass = passFound.farewell;
+            console.log('Generating password:');
+            console.log('url: ' + url);
+            console.log('typed: ' + params.typed);
+            console.log('extPass: ' + extPass);
+            var pass = greystash.generatePassword(url, params.typed, extPass);
+            sendResponse({generatedPass : pass});
+        });
+    }
+    else if (callingScriptMessage.changeExtPass) {
         //null means want to store extension password
         greystash.storePassword(null, callingScriptMessage.changeExtPass, sendResponse);
-        return true;//allows for async response
     }     
     else if (callingScriptMessage.getExtPass) {
         //null means want to store extension password
-        greystash.getPassword(null,sendResponse);
-        return true;//allows for async response
+        greystash.getPassword(null, sendResponse);
     }    
     else if (callingScriptMessage.greeting == "WTF!?") {
         sendResponse({farewell: "?TFW"});
     }
-    else{
+    else {
         sendResponse({farewell: "looks like we forgot a case"});
     }
-  });
+    return true; //allow for async response
+}
+chrome.runtime.onMessage.addListener(greystash.messageHandler);

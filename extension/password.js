@@ -21,13 +21,7 @@ var greystash = greystash || {};
  * 
  * @return A string containing the canonical url of the website
  */
-greystash.getCanonicalURL = function() {
-    var url = "";
-	if (typeof this.href === "undefined") {
-		url = document.location.toString();
-	} else {
-		url = this.href.toString();
-	}
+greystash.getCanonicalURL = function(url) {
     var re = /^.*[\.\/](.*\.(com|edu|net|org)).*$/
 
     //compress website like www.pilots.up.edu/stuff/more_stuff to up.edu

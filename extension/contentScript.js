@@ -37,14 +37,14 @@ greystash.initInjection = function() {
     
     // Search through all the forms on the page, looking for the 
     // password input and the submit button.      
-    for(var j = 0; j < allForms.length; j++){
+    for(var j = 0; j < allForms.length; j++) {
         var form = allForms[j];
     
         for (var i = 0; i < form.elements.length; i++) {
             var input = form.elements[i];
         
-        // Alter the display rules for the password input
-        // and alter the submit listener
+            // Alter the display rules for the password input
+            // and alter the submit listener
             if (input.getAttribute('type') == 'password') { 
                 console.log("Found password field");
                 console.log(input);
@@ -75,35 +75,29 @@ greystash.initInjection = function() {
  * @param form The login form being submitted
  */
 greystash.processForm = function(form) {
+    console.log('Form submitted:');
     console.log(form);
-    var typedPass = "";
+
     //grab typed password
+    var typedPass = "";
     for(var obj = 0; obj < form.elements.length; obj++){
         var unit = form.elements[obj];
         //edit password field with new password
-		if (unit.getAttribute('type') == 'password') {
+        if (unit.getAttribute('type') == 'password') {
             typedPass = unit.value;
         }
     }
 
-    //for now assume we are only talking about a static extension password
-    greystash.getExtPass(function(response){
-        //get all the parts to make a password
-        var extPass = response.farewell;
-        var url = greystash.getCanonicalURL();
+    var passParams = {url: document.URL, typed: typedPass};
 
-        //print for debug
-        console.log("extPass: " + extPass);
-        console.log("url: " + url);
-        console.log("typed: " + typedPass);
-    
-        var genPass = greystash.generatePassword(url,typedPass,extPass);
-
-        //now would inject new password into the form
-
-        //send the form with new password
+    // generate the pass in the background script
+    chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
+        var genPass = response.generatedPass;
+        console.log('Pass received: ' + genPass);
+        // put new password into the form
         form.submit();
     });
+
     return false;//makes it so we don't submit before we are ready
 }
 
