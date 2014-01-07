@@ -2,6 +2,10 @@
     font-family: proxima-nova, sans-serif;
 }
 
+body {
+    margin: 20px;
+}
+
 #error {
     color: red;
 }
