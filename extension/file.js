@@ -31,10 +31,11 @@ greystash.EXT_PASS = 'extPass';
 greystash.getPassword = function(callback, url) {
     // what password are we getting
     url = url || greystash.EXT_PASS;
+
     // where are we getting it from
     greystash.getChromeSyncState(function(useChromeSync) {
         var storage = useChromeSync ? chrome.storage.sync : chrome.storage.local;
-            
+
         storage.get(url, function(data) {
             callback(data[url]);
         });
@@ -83,7 +84,7 @@ greystash.storePassword = function(text, callback, url) {
  */ 
 greystash.getChromeSyncState = function(callback) {
     chrome.storage.local.get(greystash.CHROME_SYNC, function(data) {
-        if (data) {
+        if ((data != null) && (data.length > 0)) {
             callback(data[greystash.CHROME_SYNC]);
         } else {
             // disable sync by default
