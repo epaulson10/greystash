@@ -9,7 +9,6 @@
  * @version 12/1/13 - added the logic to generate a password
  *
  */
-
 var greystash = greystash || {};
 
 
@@ -25,36 +24,10 @@ greystash.getCanonicalURL = function(url) {
     var re = /^.*[\.\/](.*\.(com|edu|net|org)).*$/
 
     //compress website like www.pilots.up.edu/stuff/more_stuff to up.edu
-    url = url.replace(re,function(match, p1){return p1});
-    url =  url.toLowerCase();
+    url = url.replace(re, function(match, p1){return p1});
+    url = url.toLowerCase();
 
     return url;
-}
-
-
-/*
- * getExtPassword()
- *
- * Sends a message to the background page asking for the extension password.
- * 
- * @param callback Callback function that uses the extension password
- */
-greystash.getExtPass = function(callback) {
-    chrome.runtime.sendMessage({getExtPass: "somethingToMakeItTrue"},callback);
-}
-
-
-/*
- * getStalePass()
- * 
- * Sends a message to the background page asking for the stale extension
- * password for a given website.
- * 
- * @param url The canonical url of the website
- * @param callback the function to call when the extension password is returned
- */
-greystash.getStalePass = function(url, callback){
-    chrome.runtime.sendMessage({getStalePass: url}, callback);
 }
 
 
@@ -66,33 +39,36 @@ greystash.getStalePass = function(url, callback){
  *
  * @param url The url of the website being logged into
  * @param typed The simple password the user enters into the website password field
- * @param extensionPassword The user's Greystash extension password
+ * @param extPass The user's Greystash extension password
  *
  * @return A string containing the generated password
  */
-greystash.generatePassword = function(url,typed,extensionPassword){
-	console.log("made it in generatePassword");
-    //big long string made from the web page URL, extension Password, and
-	//typed password
-	var toHash = url.concat(extensionPassword, typed);
+greystash.generatePassword = function(url, typed, extPass){
+    var toHash = url + extPass;
+    var pass;
+    var attempt = 0;
+    do {
+        // use the typed password as a random salt
+        // 200 = loop count 110 = num bits for key
+        var bitArray = sjcl.misc.pbkdf2(toHash, typed + attempt, 2000, 110);
+        //convert bit array to a hex number
+        var hash = sjcl.codec.hex.fromBits(bitArray);
+        
+        console.log("hashReturned: " + hash);
 
+        //convert hash to ASCII password
+        pass = greystash.convertBase(hash, BASE16, BASE92);
 
-    var pretendSalt = "a";//hardcoded for now
-	var bitArray = sjcl.misc.pbkdf2(toHash, pretendSalt, 2000, 110);//200 = loop count 110 = num bits for key
-    //convert bit array to a hex number
-    var hash = sjcl.codec.hex.fromBits(bitArray);
-    console.log("hashReturned: " + hash);
-
-    //convert hash to ASCII password
-    var password = greystash.convertBase(hash,BASE16,BASE92);
-	
-	console.log("Generated Password: " + password);
-
-    //TODO: add a check to make sure it works with the website rules and
-    //loop again if it does not match
-
+        // truncate if needed
+        var max = greystash.getRule(url).max_len;
+        if (max && pass.length > max) pass = pass.substring(0, max);
+        
+        console.log("- Generated Password: " + pass);
+        attempt++;
+    } while (!greystash.checkRule(url, pass) && (attempt < 100));
+    //100 chosen at random for now 
     
-    return password;
+    return pass;
 }
 
 
@@ -109,30 +85,30 @@ greystash.generatePassword = function(url,typed,extensionPassword){
  * @return A string 
  */
 greystash.convertBase = function(src, srctable, desttable){
-	var srclen = srctable.length;
-	var destlen = desttable.length;
-	// first convert to base 10
-	var val = 0;
-	var numlen = src.length;
-	for (var i = 0; i < numlen; i ++)
-	{
-		val = val * srclen + srctable.indexOf(src.charAt(i));
-	}
-	if (val < 0)
-	{
-		return 0;
-	}
-	// then covert to any base
-	var r = val % destlen;
-	var res = desttable.charAt(r);
-	var q = Math.floor(val / destlen);
-	while (q)
-	{
-		r = q % destlen;
-		q = Math.floor(q / destlen);
-		res = desttable.charAt(r) + res;
-	}
-	return res;
+    var srclen = srctable.length;
+    var destlen = desttable.length;
+    // first convert to base 10
+    var val = 0;
+    var numlen = src.length;
+    for (var i = 0; i < numlen; i ++)
+    {
+        val = val * srclen + srctable.indexOf(src.charAt(i));
+    }
+    if (val < 0)
+    {
+        return 0;
+    }
+    // then covert to any base
+    var r = val % destlen;
+    var res = desttable.charAt(r);
+    var q = Math.floor(val / destlen);
+    while (q)
+    {
+        r = q % destlen;
+        q = Math.floor(q / destlen);
+        res = desttable.charAt(r) + res;
+    }
+    return res;
 }
 
 var BASE2  = "01";
@@ -145,6 +121,7 @@ var BASE75 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.,!
 //Joe Devlin added following line to enable all special characters allowed in passwords
 var BASE92 = "!\"#$%&'()*+'-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\]^_`ABCDEFGHIJKLMNOPQRSTUVWZYZ";
 
+
 /*
  * checkRule()
  * 
@@ -155,8 +132,13 @@ var BASE92 = "!\"#$%&'()*+'-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\]^_`A
  *
  * @return true if the generated password fits the site's rules, false otherwise
  */
-greystash.checkRule = function(url){
-    return true
+greystash.checkRule = function(url, pass) {
+    var re = greystash.getRule(url).rule;
+
+    if (re == null) {
+        console.log('ERROR: rule for ' + url + ' not found');
+        return false;
+    }
+
+    return re.test(pass);
 }
-
-

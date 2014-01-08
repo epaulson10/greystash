@@ -13,12 +13,18 @@
     ],
 
     "background": {
-      "scripts": ["background.js", "file.js", "extPassword.js", "password.js", "sjcl.js"]
+      "scripts": [
+        "background.js",
+        "file.js",
+        "extPassword.js",
+        "password.js",
+        "rules.js",
+        "sjcl.js"
+      ]
     },
 
     "permissions": [
       "<all_urls>",
-      "storage",
       "tabs",
       "background",
       "pageCapture",
