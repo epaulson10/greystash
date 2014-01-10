@@ -79,26 +79,33 @@ greystash.processForm = function(form) {
     console.log(form);
 
     //grab typed password
-    var typedPass = "";
+    var pass;
+    var typedPass;
     for(var obj = 0; obj < form.elements.length; obj++){
         var unit = form.elements[obj];
         //edit password field with new password
         if (unit.getAttribute('type') == 'password') {
+            pass = unit;
             typedPass = unit.value;
         }
     }
 
-    var passParams = {url: document.URL, typed: typedPass};
+    if (pass && typedPass) {
+        var passParams = {url: document.URL, typed: typedPass};
 
-    // generate the pass in the background script
-    chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
-        var genPass = response.generatedPass;
-        console.log('Pass received: ' + genPass);
-        // put new password into the form
-        form.submit();
-    });
+        // generate the pass in the background script
+        chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
+            var genPass = response.generatedPass;
+            console.log('Pass received: ' + genPass);
+            // put new password into the form
+            pass.value = genPass;
+            form.submit();
+        });
 
-    return false;//makes it so we don't submit before we are ready
+        return false;//makes it so we don't submit before we are ready
+    }
+    // if we can't find the password field don't do anything
+    return true;
 }
 
 
