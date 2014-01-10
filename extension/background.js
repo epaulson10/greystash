@@ -13,6 +13,16 @@
 var greystash = greystash || {};
 
 
+// Add a listener to handle the first install of the Greystash extension
+// This prompts the user to set an Extension password
+greystash.onInstall = function(details) {
+    chrome.tabs.create({url: 'popup.html'});
+    alert("Greystash loaded. \n\nEnter a new password and press " +
+          "'Change Password' to set your extension password.");
+};
+chrome.runtime.onInstalled.addListener(greystash.onInstall);
+
+
 // Add a listener such that whenever a tab is updated in Chrome,
 // the page is instrumented according to our initInjection()
 // content script function.
@@ -22,11 +32,12 @@ var greystash = greystash || {};
 // Doing so throws an error to the console.
 greystash.initPage = function(tabId, changeInfo) {
     if (changeInfo.status === 'complete') {
+
         chrome.tabs.executeScript(tabId, {
             code: ' greystash.initInjection(); ' 
         });
     }
-}
+};
 chrome.tabs.onUpdated.addListener(greystash.initPage);
 
 
@@ -77,5 +88,5 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
         sendResponse({farewell: "looks like we forgot a case"});
     }
     return true; //allow for async response
-}
+};
 chrome.runtime.onMessage.addListener(greystash.messageHandler);
