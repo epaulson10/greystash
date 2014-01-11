@@ -25,13 +25,13 @@ chrome.runtime.onInstalled.addListener(greystash.onInstall);
 
 // Add a listener such that whenever a tab is updated in Chrome,
 // the page is instrumented according to our initInjection()
-// content script function.
+// content script function if the website is supported.
+greystash.initPage = function(tabId, changeInfo, tab) {
+    // if there is a rule for this url than this website is supported
+    var url = greystash.getCanonicalURL(tab.url);
+    if (greystash.getRule(url) && (changeInfo.status === 'complete')) {
 
-// TODO: Need to correct this listener so that it doesn't 
-// try to alter the chrome://extensions and other such tabs.
-// Doing so throws an error to the console.
-greystash.initPage = function(tabId, changeInfo) {
-    if (changeInfo.status === 'complete') {
+        chrome.pageAction.show(tabId);
 
         chrome.tabs.executeScript(tabId, {
             code: ' greystash.initInjection(); ' 
