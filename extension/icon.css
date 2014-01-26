@@ -1,0 +1,22 @@
+.icon-greystash{
+  border:1px solid #999;
+  padding:3px 18px 3px 4px; /* USE the same right padding in jQ! */
+  border-radius:3px;
+  transition: background 0.4s;
+  background-position: right 5px center;
+}
+.icon-check{
+  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/check.png") no-repeat right center;
+}
+
+.icon-triangle{
+  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/triangle.png") no-repeat right center;
+}
+.icon-x{
+  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/x.png") no-repeat right center;
+}
+
+/* (jQ addClass:) if mouse is over the 'x' input area*/
+.icon-greystash.onX{
+  cursor:pointer;
+}

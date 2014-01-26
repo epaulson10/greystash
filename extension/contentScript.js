@@ -14,7 +14,6 @@
 // Create a namespace for this extension.
 var greystash = greystash || {};
 
-
 /*
  * initInjection()
  * 
@@ -31,7 +30,17 @@ var greystash = greystash || {};
 greystash.initInjection = function() { 
 
     console.log('Page Instrumented.');
-    
+
+    //jQuery code to allow us to click on the icon in the 
+    //password field to change greystash options.
+    $(document).on('mousemove', '.icon-greystash', function( e ){
+                  $(this)[(this.offsetWidth-18 < e.clientX-this.getBoundingClientRect().left)?'addClass':'removeClass']('onX');   
+               }).on('click', '.onX', function(){
+                  $(this).removeClass('x onX');
+                  greystash.changeIcon(this);
+                  console.log("Field button clicked!");
+               });
+
     // Grab all of the forms on the page.
     var allForms = document.getElementsByTagName('form');
     
@@ -46,21 +55,22 @@ greystash.initInjection = function() {
             // Alter the display rules for the password input
             // and alter the submit listener
             if (input.getAttribute('type') == 'password') { 
-                console.log("Found password field");
-                console.log(input);
-                input.style.backgroundColor = 'red';
+               console.log("Found password field");
+               console.log(input);
+
+               //Add the clickable icon to the password field
+               input.className = input.className + " icon-greystash icon-check";
             }
-        
+
             //change what the submit button does
             if(input.getAttribute('type') == 'submit'){
-                input.onclick = function(){
-                    return greystash.processForm(this.form);
+               input.onclick = function(){
+                  return greystash.processForm(this.form);
                 };
             }
         }
     }
 }
-
 
 /*
  * processForm()
@@ -134,8 +144,17 @@ greystash.processForm = function(form) {
  * @param password The password field whose icon is to be changed
  */
 greystash.changeIcon = function(password) {
-}
+   if ($(password).hasClass('icon-check')) {
+      $(password).removeClass('icon-check').addClass('icon-triangle');
+   }
+   else if ($(password).hasClass('icon-triangle')) {
+      $(password).removeClass('icon-triangle').addClass('icon-x');
+   }
+   else if ($(password).hasClass('icon-x')) {
+      $(password).removeClass('icon-x').addClass('icon-check');
+   }
 
+}
 
 /*
  * checkStale()
@@ -147,7 +166,7 @@ greystash.changeIcon = function(password) {
  * @return True is a stale password exists, false if not.
  */
 greystash.checkStale = function(url) {
-    return true;
+   return true;
 }
 
 
@@ -161,5 +180,5 @@ greystash.checkStale = function(url) {
  * background page to update the stale state of the web site.
  */
 greystash.confirmStalePassChange = function() {
-    alert('Did you change your password yet??');
+   alert('Did you change your password yet??');
 }

@@ -9,7 +9,8 @@
       {
         "matches": ["<all_urls>"],
         "exclude_globs": ["chrome-extension://*", "chrome://*"],
-        "js": ["contentScript.js"]
+        "js": ["contentScript.js", "jquery-1.11.0.min.js"],
+        "css": ["icon.css"]
       }
     ],
 
@@ -20,7 +21,8 @@
         "extPassword.js",
         "password.js",
         "rules.js",
-        "sjcl.js"
+        "sjcl.js",
+        "jquery-1.11.0.min.js"
       ]
     },
 
@@ -37,5 +39,6 @@
       "default_icon": "cat.png",
       "default_popup": "popup.html",
       "default_title": "Greystash"
-    }
+    },
+    "web_accessible_resources": ["check.png","x.png","triangle.png"]
 }
