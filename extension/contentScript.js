@@ -14,6 +14,11 @@
 // Create a namespace for this extension.
 var greystash = greystash || {};
 
+//added constants to represent weather or not to hash passwords
+//should be changed when we use icons
+greystash.HASH = 'green';
+greystash.NO_HASH = 'red';
+greystash.USE_STALE = 'yellow';
 
 /*
  * initInjection()
@@ -33,34 +38,38 @@ greystash.initInjection = function() {
     console.log('Page Instrumented.');
     
     // Grab all of the forms on the page.
-    var allForms = document.getElementsByTagName('form');
+    var allForms = document.forms;
     
     // Search through all the forms on the page, looking for the 
     // password input and the submit button.      
-    for(var j = 0; j < allForms.length; j++) {
-        var form = allForms[j];
-    
-        for (var i = 0; i < form.elements.length; i++) {
-            var input = form.elements[i];
+    var elements, input;
+    for(var i = 0; i < allForms.length; i++) {
+
+        elements = allForms[i].elements;
+        for (var j = 0; j < elements.length; j++) {
+            input = elements[j];
         
             // Alter the display rules for the password input
             // and alter the submit listener
-            if (input.getAttribute('type') == 'password') { 
-                console.log("Found password field");
-                console.log(input);
-                input.style.backgroundColor = 'red';
+            if (input.getAttribute('type') === 'password') { 
+                input.style.backgroundColor = greystash.NO_HASH;
+                
+                //for now change modes when the user clicks on the
+                //text field
+                input.onclick = function() {
+                    greystash.changeIcon(this);
+                }
             }
         
             //change what the submit button does
-            if(input.getAttribute('type') == 'submit'){
-                input.onclick = function(){
-                    return greystash.processForm(this.form);
+            if (input.getAttribute('type') === 'submit') {
+                input.onclick = function() {
+                    return greystash.processForm(this.form, this);
                 };
             }
-        }
-    }
+        }//for
+    }//for
 }
-
 
 /*
  * processForm()
@@ -73,38 +82,40 @@ greystash.initInjection = function() {
  * submitted to the web site.
  *
  * @param form The login form being submitted
+ * @param button the submit button for the form
  */
-greystash.processForm = function(form) {
-    console.log('Form submitted:');
-    console.log(form);
+greystash.processForm = function(form, button) {
+    console.log('Form submitted:', form);
+    
+    var elements = form.elements;
+    var pass, passParams;
+    for (var i = 0; i < elements.length; i++) {
+        
+        if (elements[i].getAttribute('type') === 'password') {
+            pass = elements[i];
+            passParams = {url: document.URL, typed: pass.value};
 
-    //grab typed password
-    var pass;
-    var typedPass;
-    for(var obj = 0; obj < form.elements.length; obj++){
-        var unit = form.elements[obj];
-        //edit password field with new password
-        if (unit.getAttribute('type') == 'password') {
-            pass = unit;
-            typedPass = unit.value;
+            //check if we need to hash
+            if (pass && pass.style.backgroundColor != greystash.NO_HASH) {
+                // generate the pass in the background script
+                chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
+                    var genPass = response.generatedPass;
+                    console.log('Pass received: ' + genPass);
+        
+                    // put new password into the form and change to do not hash,
+                    // since we just did
+                    pass.value = genPass;
+                    pass.style.backgroundColor = greystash.NO_HASH;
+
+                    // attempt to resubmit the form
+                    button.click();
+                });
+
+                return false; // wait for the password to be hashed
+            }
         }
-    }
+    }//for
 
-    if (pass && typedPass) {
-        var passParams = {url: document.URL, typed: typedPass};
-
-        // generate the pass in the background script
-        chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
-            var genPass = response.generatedPass;
-            console.log('Pass received: ' + genPass);
-            // put new password into the form
-            pass.value = genPass;
-            form.submit();
-        });
-
-        return false;//makes it so we don't submit before we are ready
-    }
-    // if we can't find the password field don't do anything
     return true;
 }
 
@@ -130,10 +141,18 @@ greystash.processForm = function(form) {
  *  Red: this is the 'off' icon.  Password fields with this icon will not have
  *       the user input changed into a generated password and will be submitted
  *       to the website as typed by the user.
+ * 
+ * Note: for now just changes the color of the filed to indicate weather to 
+ * hash a password or not
  *
- * @param password The password field whose icon is to be changed
+ * @param inputField The password field whose icon is to be changed
  */
-greystash.changeIcon = function(password) {
+greystash.changeIcon = function(inputField) {
+    if (inputField.style.backgroundColor === greystash.HASH){
+        inputField.style.backgroundColor = greystash.NO_HASH;
+    } else {
+        inputField.style.backgroundColor = greystash.HASH;
+    }
 }
 
 
@@ -159,7 +178,8 @@ greystash.checkStale = function(url) {
  * 
  * If the user confirms they changed a password, a message is sent to the
  * background page to update the stale state of the web site.
+ * 
+ * 
  */
-greystash.confirmStalePassChange = function() {
-    alert('Did you change your password yet??');
+greystash.confirmStalePassChange = function(inputField) {
 }
