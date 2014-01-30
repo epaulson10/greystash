@@ -6,6 +6,11 @@ body {
     margin: 20px;
 }
 
+img {
+    float: left;
+    margin-right: 10px;
+}
+
 #error {
     color: red;
 }

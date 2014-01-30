@@ -35,7 +35,15 @@ greystash.USE_STALE = 'yellow';
  */
 greystash.initInjection = function() { 
 
-    console.log('Page Instrumented.');
+    console.log(
+"        GREYSTASH          \n" +
+"                           \n" +
+"        . `.*.' .          \n" +
+"  . +  * .o   o.* `.`. +.  \n" +
+" *  . ' ' |\\^/|  `. * .  * \n" +
+"           \\V/             \n" +
+"You Shall  /_\\  Not Pass!  \n" +
+"          _/ \\_            \n");
     
     // Grab all of the forms on the page.
     var allForms = document.forms;

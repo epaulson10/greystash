@@ -25,7 +25,7 @@ greystash.initPopup = function() {
     console.log('Popup Instrumented.');
 
     var changePassBtn = document.getElementById('changePass');
-    // Alter the submit form's onclick behaviour to
+    // Alter the submit form's onclick behaviour t              o
     // send a  message to the background page.  
     changePassBtn.onclick = function() { 
         var extPassInput = document.getElementById('password');
@@ -37,7 +37,9 @@ greystash.initPopup = function() {
             chrome.runtime.sendMessage({changeExtPass: extPassInput.value}, 
               function(response) {
                   console.log('saved new ext pass in storage: ' + response.data);
+                  greystash.updateExtPassStatus();
             });
+            extPassInput.value = "";
         } else {
             var err = document.getElementById('error');
             err.textContent = 'Please enter a password'; 
@@ -56,6 +58,28 @@ greystash.initPopup = function() {
 
 
 /*
+ * getExtPassStatus()
+ *
+ * @return true if the extension password is set, false if not
+ */
+greystash.updateExtPassStatus = function() {
+    // send a request to background page to change the extension pass
+    chrome.runtime.sendMessage({getExtPass: true}, 
+      function(response) {
+          if (response.extPass) {
+            console.log('saved ext pass found: ' + response.extPass);
+            document.getElementById('hasPassImg').src = 'imgs/green_check.png';
+            document.getElementById('hasPass').textContent = 'Extension password set';
+          } else {
+            console.log('no saved ext pass found');
+            document.getElementById('hasPassImg').src = 'imgs/red_x.png';
+            document.getElementById('hasPass').textContent = 'No extension password found';
+          }
+    });
+}
+
+
+/*
  * restoreSettings()
  *
  * Restores user input fields to their saved state.
@@ -69,6 +93,8 @@ greystash.restoreSettings = function() {
         console.log('sync setting restored to: ' + savedSetting);
         document.getElementById('sync').checked = savedSetting;
     });
+
+    greystash.updateExtPassStatus();
 } 
 
 
