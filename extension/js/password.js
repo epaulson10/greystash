@@ -21,7 +21,7 @@ var greystash = greystash || {};
  * @return A string containing the canonical url of the website
  */
 greystash.getCanonicalURL = function(url) {
-    var re = /^.*[\.\/](.*\.(com|edu|net|org)).*$/
+    var re = /^.*[\.\/](.*?\.(com|edu|net|org))[^\%].*/
 
     //compress website like www.pilots.up.edu/stuff/more_stuff to up.edu
     url = url.replace(re, function(match, p1){return p1});

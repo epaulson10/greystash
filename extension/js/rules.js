@@ -31,7 +31,7 @@ var greystash = greystash || {};
  */
 greystash.initRules = function() {
     var rules = {};
-
+    
     rules['reddit'] = {
         urls: ['reddit.com'],
         rule: /^.{3,}$/
@@ -47,7 +47,28 @@ greystash.initRules = function() {
         urls: ['ebay.com'],
         rule: /^(?=.*[0-9].*[0-9])(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*/
     };
-
+    rules['twitter'] = {
+        urls: ['twitter.com'],
+        rule: /^.{6,}$/
+    };
+    rules['pilots'] = {
+        urls: ['up.edu'],
+        rule: /^(?=.*[0-9].*)(?=.*[a-z].*)(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*/
+    };
+    rules['amazon'] = {
+        urls: ['amazon.com'],
+        rule: /^.{6,128}$/,
+        max_len: 128
+    };
+    rules['live'] = {
+        urls: ['live.com'],
+        rule: /^(?=.*[0-9].*)(?=.*[a-z].*)(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*/,
+        max_len: 16
+    };
+    rules['google'] = {
+        urls: ['google.com'],
+        rule: /^.{8,}$/
+    };
     // read a file for more rules in JSON?
 
     return rules;
