@@ -2,18 +2,22 @@
   border:1px solid #999;
   padding:3px 18px 3px 4px; /* USE the same right padding in jQ! */
   border-radius:3px;
-  transition: background 0.4s;
   background-position: right 5px center;
 }
 .icon-check{
-  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/check.png") no-repeat right center;
+  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/check.png");
+  background-repeat: no-repeat;
 }
 
 .icon-triangle{
-  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/triangle.png") no-repeat right center;
+  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/triangle.png");
+  background-repeat: no-repeat;
+
 }
 .icon-x{
-  background:url("chrome-extension://onneomipefmcaibfhbeggclnffkndbjn/x.png") no-repeat right center;
+  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/x.png");
+  background-repeat: no-repeat;
+
 }
 
 /* (jQ addClass:) if mouse is over the 'x' input area*/
