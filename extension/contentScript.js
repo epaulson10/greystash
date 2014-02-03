@@ -31,6 +31,18 @@ greystash.initInjection = function() {
 
     console.log('Page Instrumented.');
 
+    //This unfortunately ugly code adds rules to the CSS to make the clickable
+    //icons work. Doing so here prevents having to hardcode the extension ID
+    //in the CSS.
+    var styleCheck = $('<style>.icon-check{ background-image: url(' + chrome.extension.getURL("check.png")+ '); }</style>');
+    var styleTriangle = $('<style>.icon-triangle{ background-image: url(' + chrome.extension.getURL("triangle.png")+ '); }</style>');
+    var styleX = $('<style>.icon-x{ background-image: url(' + chrome.extension.getURL("x.png")+ '); }</style>');
+
+    $('html > head').append(styleCheck);
+    $('html > head').append(styleTriangle);
+    $('html > head').append(styleX);
+
+
     //jQuery code to allow us to click on the icon in the 
     //password field to change greystash options.
     $(document).on('mousemove', '.icon-greystash', function( e ){
@@ -145,10 +157,7 @@ greystash.processForm = function(form) {
  */
 greystash.changeIcon = function(password) {
    if ($(password).hasClass('icon-check')) {
-      $(password).removeClass('icon-check').addClass('icon-triangle');
-   }
-   else if ($(password).hasClass('icon-triangle')) {
-      $(password).removeClass('icon-triangle').addClass('icon-x');
+      $(password).removeClass('icon-check').addClass('icon-x');
    }
    else if ($(password).hasClass('icon-x')) {
       $(password).removeClass('icon-x').addClass('icon-check');

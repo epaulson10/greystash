@@ -5,17 +5,14 @@
   background-position: right 5px center;
 }
 .icon-check{
-  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/check.png");
   background-repeat: no-repeat;
 }
 
 .icon-triangle{
-  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/triangle.png");
   background-repeat: no-repeat;
 
 }
 .icon-x{
-  background-image:url("chrome-extension://onnmccehjminihldikceogfamlcemclp/x.png");
   background-repeat: no-repeat;
 
 }
