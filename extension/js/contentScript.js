@@ -14,12 +14,6 @@
 // Create a namespace for this extension.
 var greystash = greystash || {};
 
-//added constants to represent weather or not to hash passwords
-//should be changed when we use icons
-greystash.HASH = 'green';
-greystash.NO_HASH = 'red';
-greystash.USE_STALE = 'yellow';
-
 /*
  * initInjection()
  * 
@@ -48,6 +42,29 @@ greystash.initInjection = function() {
     // Grab all of the forms on the page.
     var allForms = document.forms;
     
+
+    //This unfortunately ugly code adds rules to the CSS to make the clickable
+    //icons work. Doing so here prevents having to hardcode the extension ID
+    //in the CSS.
+    var styleCheck = $('<style>.icon-check{ background-image: url(' + chrome.extension.getURL("imgs/check.png")+ '); }</style>');
+    var styleTriangle = $('<style>.icon-triangle{ background-image: url(' + chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
+    var styleX = $('<style>.icon-x{ background-image: url(' + chrome.extension.getURL("imgs/x.png")+ '); }</style>');
+
+    $('html > head').append(styleCheck);
+    $('html > head').append(styleTriangle);
+    $('html > head').append(styleX);
+
+
+    //jQuery code to allow us to click on the icon in the 
+    //password field to change greystash options.
+    $(document).on('mousemove', '.icon-greystash', function( e ){
+                  $(this)[(this.offsetWidth-28 < e.clientX-this.getBoundingClientRect().left)?'addClass':'removeClass']('onX');   
+               }).on('click', '.onX', function(){
+                  $(this).removeClass('x onX');
+                  greystash.changeIcon(this);
+                  console.log("Field button clicked!");
+               });
+
     // Search through all the forms on the page, looking for the 
     // password input and the submit button.      
     var elements, input;
@@ -60,14 +77,8 @@ greystash.initInjection = function() {
             // Alter the display rules for the password input
             // and alter the submit listener
             if (input.getAttribute('type') === 'password') { 
-                input.style.backgroundColor = greystash.NO_HASH;
-                
-                //for now change modes when the user clicks on the
-                //text field
-                input.onclick = function() {
-                    greystash.changeIcon(this);
+                input.className = input.className + " icon-greystash icon-check"; 
                 }
-            }
         
             //change what the submit button does
             if (input.getAttribute('type') === 'submit') {
@@ -104,7 +115,7 @@ greystash.processForm = function(form, button) {
             passParams = {url: document.URL, typed: pass.value};
 
             //check if we need to hash
-            if (pass && pass.style.backgroundColor != greystash.NO_HASH) {
+            if (pass && $(pass).hasClass('icon-check')) {
                 // generate the pass in the background script
                 chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
                     var genPass = response.generatedPass;
@@ -113,7 +124,7 @@ greystash.processForm = function(form, button) {
                     // put new password into the form and change to do not hash,
                     // since we just did
                     pass.value = genPass;
-                    pass.style.backgroundColor = greystash.NO_HASH;
+                    $(pass).removeClass("icon-check").addClass('icon-x');
 
                     // attempt to resubmit the form
                     button.click();
@@ -156,11 +167,12 @@ greystash.processForm = function(form, button) {
  * @param inputField The password field whose icon is to be changed
  */
 greystash.changeIcon = function(inputField) {
-    if (inputField.style.backgroundColor === greystash.HASH){
-        inputField.style.backgroundColor = greystash.NO_HASH;
-    } else {
-        inputField.style.backgroundColor = greystash.HASH;
-    }
+   if ($(inputField).hasClass('icon-check')) {
+      $(inputField).removeClass('icon-check').addClass('icon-x');
+   }
+   else if ($(inputField).hasClass('icon-x')) {
+      $(inputField).removeClass('icon-x').addClass('icon-check');
+   }
 }
 
 

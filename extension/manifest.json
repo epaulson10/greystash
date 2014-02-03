@@ -9,7 +9,8 @@
       {
         "matches": ["<all_urls>"],
         "exclude_globs": ["chrome-extension://*", "chrome://*"],
-        "js": ["js/contentScript.js"]
+        "js": ["js/contentScript.js", "js/lib/jquery-1.11.0.min.js"],
+        "css": ["css/icon.css"]
       }
     ],
 
@@ -45,5 +46,6 @@
       },
       "default_popup": "popup.html",
       "default_title": "Greystash"
-    }
+    },
+    "web_accessible_resources": ["imgs/check.png","imgs/x.png","imgs/triangle.png"]
 }

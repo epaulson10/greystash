@@ -1,0 +1,23 @@
+.icon-greystash{
+  border:1px solid #999;
+  padding:3px 18px 3px 4px; /* USE the same right padding in jQ! */
+  border-radius:3px;
+  background-position: right 5px center;
+}
+.icon-check{
+  background-repeat: no-repeat;
+}
+
+.icon-triangle{
+  background-repeat: no-repeat;
+
+}
+.icon-x{
+  background-repeat: no-repeat;
+
+}
+
+/* (jQ addClass:) if mouse is over the 'x' input area*/
+.icon-greystash.onX{
+  cursor:pointer;
+}
