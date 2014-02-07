@@ -50,7 +50,7 @@ greystash.generatePassword = function(url, typed, extPass){
     do {
         // use the typed password as a random salt
         // 200 = loop count 110 = num bits for key
-        var bitArray = sjcl.misc.pbkdf2(toHash, typed + attempt, 2000, 110);
+        var bitArray = sjcl.misc.pbkdf2(toHash, typed + attempt, 140000, 110);
         //convert bit array to a hex number
         var hash = sjcl.codec.hex.fromBits(bitArray);
         
