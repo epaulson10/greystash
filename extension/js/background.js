@@ -30,7 +30,6 @@ greystash.initPage = function(tabId, changeInfo, tab) {
     // if there is a rule for this url than this website is supported
     var url = greystash.getCanonicalURL(tab.url);
     if (greystash.getRule(url) && (changeInfo.status === 'complete')) {
-
         chrome.pageAction.show(tabId);
 
         chrome.tabs.executeScript(tabId, {
@@ -66,6 +65,7 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
     else if (csm.changeExtPass) {
         greystash.storePassword(csm.changeExtPass,
           function(result) {
+            greystash.initStaleTable();
             sendResponse({data: result});
         });
     }     

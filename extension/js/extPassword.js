@@ -13,7 +13,8 @@ var greystash = greystash || {};
 
 // array to keep track of which sites currently have stale passwords
 greystash.staleTable = [];
-
+greystash.STALE = 1;
+greystash.CURRENT = 0;
 
 /*
  * initStaleTable()
@@ -23,7 +24,37 @@ greystash.staleTable = [];
  * stale password.  0 means the site is using the current extension password.
  */
 greystash.initStaleTable = function() {
+    //grab extpass
+    greystash.getPassword(function(extPass){
+        console.log(extPass);
+        //loop through all the sites
+        for (var site in greystash.rules) {
+            var url = greystash.rules[site].urls;
+            //made helper to create closure
+            greystash.checkStale(url,extPass);
+        }
+    });
 }
+
+//baby helper function to create a closure for initStateTable
+greystash.checkStale = function(url,extPass) {
+    greystash.getPassword(function(webPass){
+        //if not initialized, set web password to ext password
+        if(webPass == null){
+            greystash.storePassword(extPass,function(){}, url);
+            greystash.staleTable[url] = greystash.CURRENT;
+        }
+        else if(webPass == extPass){
+            greystash.staleTable[url] = greystash.CURRENT;
+        }
+        else{
+            greystash.staleTable[url] = greystash.STALE;
+        }
+        console.log("Stale Table:");
+        console.log(greystash.staleTable);
+    },url);
+}
+
 
 
 /*

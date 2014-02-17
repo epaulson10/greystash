@@ -35,7 +35,6 @@ greystash.getPassword = function(callback, url) {
     // where are we getting it from
     greystash.getChromeSyncState(function(useChromeSync) {
         var storage = useChromeSync ? chrome.storage.sync : chrome.storage.local;
-
         storage.get(url, function(data) {
             callback(data[url]);
         });
