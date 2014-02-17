@@ -115,7 +115,7 @@ greystash.processForm = function(form, button) {
             passParams = {url: document.URL, typed: pass.value};
 
             //check if we need to hash
-            if (pass && $(pass).hasClass('icon-check')) {
+            if (pass && ($(pass).hasClass('icon-check') || $(pass).hasClass('icon-triangle'))) {
                 // generate the pass in the background script
                 chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
                     var genPass = response.generatedPass;
@@ -125,6 +125,7 @@ greystash.processForm = function(form, button) {
                     // since we just did
                     pass.value = genPass;
                     $(pass).removeClass("icon-check").addClass('icon-x');
+                    $(pass).removeClass("icon-triangle").addClass('icon-x');
 
                     // attempt to resubmit the form
                     button.click();
@@ -171,7 +172,10 @@ greystash.changeIcon = function(inputField) {
       $(inputField).removeClass('icon-check').addClass('icon-x');
    }
    else if ($(inputField).hasClass('icon-x')) {
-      $(inputField).removeClass('icon-x').addClass('icon-check');
+      $(inputField).removeClass('icon-x').addClass('icon-triangle');
+   }
+   else if ($(inputField).hasClass('icon-triangle')) {
+      $(inputField).removeClass('icon-triangle').addClass('icon-check');
    }
 }
 
