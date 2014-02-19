@@ -82,7 +82,7 @@ greystash.isStale = function(url) {
  * 
  * @return A string representing the stale password for the site
  */
-greystash.getStalePass = function(url) {
+greystash.getStalePass = function(callback, url) {
     var site = greystash.getSiteFromURL(url);
     greystash.getPassword(callback, site);
 }
