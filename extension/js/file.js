@@ -65,7 +65,7 @@ greystash.storePassword = function(text, callback, site) {
         toStore[site] = text;
 
         storage.set(toStore, function() {
-            callback(toStore);
+            if (typeof callback === 'function') callback(toStore);
         });
     });
 }
