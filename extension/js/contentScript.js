@@ -115,7 +115,14 @@ greystash.processForm = function(form, button) {
             passParams = {url: document.URL, typed: pass.value};
 
             //check if we need to hash
-            if (pass && ($(pass).hasClass('icon-check') || $(pass).hasClass('icon-triangle'))) {
+            if (pass && !$(pass).hasClass('icon-x')) {
+                // are we using a stale password or the ext pass?
+                if ($(pass).hasClass('icon-triangle')) {
+                    passParams.stale = true;
+                } else {
+                    passParams.stale = false;
+                }
+
                 // generate the pass in the background script
                 chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
                     var genPass = response.generatedPass;

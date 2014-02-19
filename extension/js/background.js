@@ -53,14 +53,20 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
         var params = csm.generatePass;
         var url = greystash.getCanonicalURL(params.url);
 
-        greystash.getPassword(function(extPass) {
+        var callback = function(extPass) {
             console.log('Generating password:');
             console.log('  url: ' + url);
             console.log('  typed: ' + params.typed);
             console.log('  extPass: ' + extPass);
             var pass = greystash.generatePassword(url, params.typed, extPass);
             sendResponse({generatedPass : pass});
-        });
+        };
+
+        if (params.stale) {
+            greystash.getStalePass(callback, url);
+        } else {
+            greystash.getPassword(callback);
+        }
     }
     else if (csm.changeExtPass) {
         greystash.storePassword(csm.changeExtPass,
