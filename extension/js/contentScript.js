@@ -27,33 +27,42 @@ var greystash = greystash || {};
  * This code runs when the background page detects a page has been loaded in
  * the browser.
  */
-greystash.initInjection = function() { 
+greystash.initInjection = function(staleness) { 
 
     console.log(
-"        GREYSTASH          \n" +
-"                           \n" +
-"        . `.*.' .          \n" +
-"  . +  * .o   o.* `.`. +.  \n" +
-" *  . ' ' |\\^/|  `. * .  * \n" +
-"           \\V/             \n" +
-"You Shall  /_\\  Not Pass!  \n" +
-"          _/ \\_            \n");
+        "        GREYSTASH          \n" +
+        "                           \n" +
+        "        . `.*.' .          \n" +
+        "  . +  * .o   o.* `.`. +.  \n" +
+        " *  . ' ' |\\^/|  `. * .  * \n" +
+        "           \\V/             \n" +
+        "You Shall  /_\\  Not Pass!  \n" +
+        "          _/ \\_            \n"
+    );
+
+    // does this site have a stale password?
+    greystash.isStale = staleness;
+    console.log(greystash.isStale);
     
     // Grab all of the forms on the page.
     var allForms = document.forms;
-    
 
     //This unfortunately ugly code adds rules to the CSS to make the clickable
     //icons work. Doing so here prevents having to hardcode the extension ID
     //in the CSS.
-    var styleCheck = $('<style>.icon-check{ background-image: url(' + chrome.extension.getURL("imgs/check.png")+ '); }</style>');
-    var styleTriangle = $('<style>.icon-triangle{ background-image: url(' + chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
-    var styleX = $('<style>.icon-x{ background-image: url(' + chrome.extension.getURL("imgs/x.png")+ '); }</style>');
-
+    var styleCheck = $('<style>.icon-check{ background-image: url(' +
+               chrome.extension.getURL("imgs/check.png")+ '); }</style>');
     $('html > head').append(styleCheck);
-    $('html > head').append(styleTriangle);
+
+    var styleX = $('<style>.icon-x{ background-image: url(' +
+                chrome.extension.getURL("imgs/x.png")+ '); }</style>');
     $('html > head').append(styleX);
 
+    if (greystash.isStale) {
+        var styleTriangle = $('<style>.icon-triangle{ background-image: url(' +
+                   chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
+        $('html > head').append(styleTriangle);
+    }
 
     //jQuery code to allow us to click on the icon in the 
     //password field to change greystash options.
@@ -143,6 +152,19 @@ greystash.processForm = function(form, button) {
         }
     }//for
 
+    //prompt user to confirm new website password
+    if(greystash.isStale){
+        var retVal = prompt("Did you change your password on this site?" +
+               "Enter Y[es] or N[o] to continue", "Yes");
+        var re = /^\s*[yY].*/
+        if(retVal.match(re)){
+            chrome.runtime.sendMessage({changeStalePass: document.URL},function(response){
+                console.log('-- update noticed in content script');
+                greystash.isStale = false;
+            })
+        }
+    }
+
     return true;
 }
 
@@ -175,15 +197,24 @@ greystash.processForm = function(form, button) {
  * @param inputField The password field whose icon is to be changed
  */
 greystash.changeIcon = function(inputField) {
-   if ($(inputField).hasClass('icon-check')) {
-      $(inputField).removeClass('icon-check').addClass('icon-x');
-   }
-   else if ($(inputField).hasClass('icon-x')) {
-      $(inputField).removeClass('icon-x').addClass('icon-triangle');
-   }
-   else if ($(inputField).hasClass('icon-triangle')) {
-      $(inputField).removeClass('icon-triangle').addClass('icon-check');
-   }
+    if (greystash.isStale) {
+        if ($(inputField).hasClass('icon-check')) {
+           $(inputField).removeClass('icon-check').addClass('icon-triangle');
+        }
+        else if ($(inputField).hasClass('icon-triangle')) {
+           $(inputField).removeClass('icon-triangle').addClass('icon-x');
+        }
+        else if ($(inputField).hasClass('icon-x')) {
+           $(inputField).removeClass('icon-x').addClass('icon-check');
+        }
+    } else {
+        if ($(inputField).hasClass('icon-check')) {
+           $(inputField).removeClass('icon-check').addClass('icon-x');
+        }
+        else if ($(inputField).hasClass('icon-x')) {
+           $(inputField).removeClass('icon-x').addClass('icon-check');
+        }
+    }//else
 }
 
 

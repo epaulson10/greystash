@@ -32,8 +32,10 @@ greystash.initPage = function(tabId, changeInfo, tab) {
     if (greystash.getRule(url) && (changeInfo.status === 'complete')) {
         chrome.pageAction.show(tabId);
 
+        var staleness = greystash.isStale(url);
+
         chrome.tabs.executeScript(tabId, {
-            code: ' greystash.initInjection(); ' 
+            code: ' greystash.initInjection(' + staleness + '); ' 
         });
     }
 };
@@ -89,6 +91,11 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
         greystash.getChromeSyncState(function(useChromeSync) {
             sendResponse({syncState: useChromeSync});
         });
+    }
+    else if(csm.changeStalePass){
+        console.log("Updating ext pass for webpage");
+        greystash.updateStalePass(url);
+        sendResponse({cat: 'meow'});
     }
     else {
         sendResponse({farewell: "looks like we forgot a case"});

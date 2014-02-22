@@ -69,7 +69,7 @@ greystash.checkStale = function(site, extPass) {
  */
 greystash.isStale = function(url) {
     var site = greystash.getSiteFromURL(url);
-    return greystash.staleTable.site;
+    return greystash.staleTable[site];
 }
 
 
@@ -95,13 +95,14 @@ greystash.getStalePass = function(callback, url) {
  *
  * @param url The url of the site to update
  * 
- * @return True if the update was successful, false if something went wrong.
  */
 greystash.updateStalePass = function(url) {
     var site = greystash.getSiteFromURL(url);
     greystash.getPassword(function(extPass) {
         greystash.storePassword(extPass, null, site);
         greystash.staleTable[site] = greystash.CURRENT;
+        console.log('stale table updated:');
+        console.log(greystash.staleTable);
     });
 }
 
@@ -114,9 +115,10 @@ greystash.updateStalePass = function(url) {
  * @param url The URL of the website
  */
 greystash.getSiteFromURL = function(url) {
+    var cURL = greystash.getCanonicalURL(url);
     for (var site in greystash.rules) {
         // if the url is associated with this site
-        if (greystash.rules[site].urls.indexOf(url) > -1) {
+        if (greystash.rules[site].urls.indexOf(cURL) > -1) {
             return site;
         }
     }
