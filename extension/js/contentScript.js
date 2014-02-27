@@ -42,7 +42,6 @@ greystash.initInjection = function(staleness) {
 
     // does this site have a stale password?
     greystash.isStale = staleness;
-    console.log(greystash.isStale);
     
     // Grab all of the forms on the page.
     var allForms = document.forms;
@@ -87,7 +86,7 @@ greystash.initInjection = function(staleness) {
             // and alter the submit listener
             if (input.getAttribute('type') === 'password') { 
                 input.className = input.className + " icon-greystash icon-check"; 
-                }
+            }
         
             //change what the submit button does
             if (input.getAttribute('type') === 'submit') {
@@ -116,6 +115,7 @@ greystash.processForm = function(form, button) {
     console.log('Form submitted:', form);
     
     var elements = form.elements;
+    var sawGreen = false;
     var pass, passParams;
     for (var i = 0; i < elements.length; i++) {
         
@@ -129,6 +129,7 @@ greystash.processForm = function(form, button) {
                 if ($(pass).hasClass('icon-triangle')) {
                     passParams.stale = true;
                 } else {
+                    if ($(pass).hasClass('icon-check')) sawGreen = true;
                     passParams.stale = false;
                 }
 
@@ -140,8 +141,23 @@ greystash.processForm = function(form, button) {
                     // put new password into the form and change to do not hash,
                     // since we just did
                     pass.value = genPass;
-                    $(pass).removeClass("icon-check").addClass('icon-x');
-                    $(pass).removeClass("icon-triangle").addClass('icon-x');
+                    $(pass).removeClass("icon-check").removeClass("icon-triangle");
+                    $(pass).addClass('icon-x');
+
+                    //prompt user to confirm new website password
+                    if(greystash.isStale && sawGreen){
+                        var retVal = prompt("Did you change your password on this site?\n" +
+                               "Enter Y[es] or N[o] to continue", "No");
+                        var re = /^\s*[yY].*/
+
+                        if(retVal ? retVal.match(re) : false){
+                            chrome.runtime.sendMessage({changeStalePass: document.URL},
+                                function(){
+                                    console.log('-- update noticed in content script');
+                                    greystash.isStale = false;
+                                });
+                        }
+                    }
 
                     // attempt to resubmit the form
                     button.click();
@@ -151,19 +167,6 @@ greystash.processForm = function(form, button) {
             }
         }
     }//for
-
-    //prompt user to confirm new website password
-    if(greystash.isStale){
-        var retVal = prompt("Did you change your password on this site?" +
-               "Enter Y[es] or N[o] to continue", "Yes");
-        var re = /^\s*[yY].*/
-        if(retVal.match(re)){
-            chrome.runtime.sendMessage({changeStalePass: document.URL},function(response){
-                console.log('-- update noticed in content script');
-                greystash.isStale = false;
-            })
-        }
-    }
 
     return true;
 }

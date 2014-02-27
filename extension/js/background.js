@@ -95,7 +95,7 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
     else if(csm.changeStalePass){
         console.log("Updating ext pass for webpage");
         greystash.updateStalePass(url);
-        sendResponse({cat: 'meow'});
+        sendResponse();
     }
     else {
         sendResponse({farewell: "looks like we forgot a case"});
