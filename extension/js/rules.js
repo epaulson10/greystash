@@ -32,6 +32,8 @@ var greystash = greystash || {};
 greystash.initRules = function() {
     var rules = {};
 
+    //**** SOCIAL *************************************************************
+
     rules['reddit'] = {
         urls: ['reddit.com'],
         rule: /^.{3,}$/
@@ -43,10 +45,59 @@ greystash.initRules = function() {
         max_len: 1000
     };
 
+    rules['twitter'] = {
+        urls: ['twitter.com'],
+        rule: /^.{6,}$/
+    };
+
+    //**** ONLINE SERVICES ****************************************************
+
+    rules['google'] = {
+        urls: ['google.com'],
+        rule: /^.{8,}$/
+    };
+
+    rules['microsoft'] = {
+        urls: ['live.com'],
+        rule: /^(?=.{8,16}$)(?=.*[0-9])(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*$/,
+        max_len: 16
+    };
+
+    //**** SHOPPING ***********************************************************
+    
     rules['ebay'] = {
         urls: ['ebay.com'],
-        rule: /^(?=.*[0-9].*[0-9])(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*/
+        rule: /^(?=.{6,}$)(?=.*[0-9])(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*$/
     };
+
+    rules['amazon'] = {
+        urls: ['amazon.com'],
+        rule: /^.{6,128}$/,
+        max_len: 128
+    };
+
+    //**** BANKS **************************************************************
+
+    rules['wellsfargo'] = {
+        urls: ['wellsfargo.com'],
+        rule: /^(?=.{8,14}$)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\^*#!@$%&()]).*$/,
+        max_len: 14
+    };
+
+    rules['bankofamerica'] = {
+        urls: ['bankofamerica.com'],
+        rule: /^(?=.{8,20}$)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$/,
+        max_len: 20
+    };
+
+
+    //**** SCHOOLS ************************************************************
+
+    rules['pilots'] = {
+        urls: ['up.edu'],
+        rule: /^(?=.{8,}$)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\^\-*#~!@$%&()_+=`]).*/
+    };
+
 
     // read a file for more rules in JSON?
 
