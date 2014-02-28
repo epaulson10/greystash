@@ -7,10 +7,6 @@ greystash.webGenerate = function() {
     var sitePass = document.getElementById('site_pass').value;
     var extPass = document.getElementById('ext_pass').value;
 
-    console.log("Site: " + site);
-    console.log("Site Pass: " + sitePass);
-    console.log("Ext Pass: " + extPass);
-
     out.innerHTML = greystash.generatePassword(site, sitePass, extPass);
 }
 
