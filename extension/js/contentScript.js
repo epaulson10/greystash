@@ -113,7 +113,7 @@ greystash.initInjection = function(staleness) {
  */
 greystash.processForm = function(form, button) {
     console.log('Form submitted:', form);
-    
+
     var elements = form.elements;
     var sawGreen = false;
     var pass, passParams;
@@ -144,19 +144,9 @@ greystash.processForm = function(form, button) {
                     $(pass).removeClass("icon-check").removeClass("icon-triangle");
                     $(pass).addClass('icon-x');
 
-                    //prompt user to confirm new website password
-                    if(greystash.isStale && sawGreen){
-                        var retVal = prompt("Did you change your password on this site?\n" +
-                               "Enter Y[es] or N[o] to continue", "No");
-                        var re = /^\s*[yY].*/
-
-                        if(retVal ? retVal.match(re) : false){
-                            chrome.runtime.sendMessage({changeStalePass: document.URL},
-                                function(){
-                                    console.log('-- update noticed in content script');
-                                    greystash.isStale = false;
-                                });
-                        }
+                    // has the user changed their site password?
+                    if (greystash.isStale && sawGreen) {
+                        greystash.confirmStalePassChange();
                     }
 
                     // attempt to resubmit the form
@@ -246,5 +236,17 @@ greystash.checkStale = function(url) {
  * 
  * 
  */
-greystash.confirmStalePassChange = function(inputField) {
+greystash.confirmStalePassChange = function() {
+    var retVal = prompt("Did you change your password on this site?\n" +
+           "Enter Y[es] or N[o] to continue", "No");
+    var re = /^\s*[yY].*/
+
+    if(retVal ? retVal.match(re) : false){
+        chrome.runtime.sendMessage({changeStalePass: document.URL},
+            function(){
+                console.log('-- update noticed in content script');
+                greystash.isStale = false;
+            });
+    }
+
 }
