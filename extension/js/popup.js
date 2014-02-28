@@ -46,7 +46,7 @@ greystash.initPopup = function() {
             // update the staleness of the user's current website
             errOutput.textContent = 'Refresh the page for change to take effect';
         } else {
-            errOutput.textContent = 'Please enter a password'; 
+            errOutput.textContent = 'Please enter a secret phrase'; 
         }
     };
 
@@ -73,11 +73,11 @@ greystash.updateExtPassStatus = function() {
           if (response.extPass) {
             console.log('saved ext pass found: ' + response.extPass);
             document.getElementById('hasPassImg').src = 'imgs/green_check.png';
-            document.getElementById('hasPass').textContent = 'Extension password set';
+            document.getElementById('hasPass').textContent = 'Secret phrase set';
           } else {
             console.log('no saved ext pass found');
             document.getElementById('hasPassImg').src = 'imgs/red_x.png';
-            document.getElementById('hasPass').textContent = 'No extension password found';
+            document.getElementById('hasPass').textContent = 'No secret phrase found';
           }
     });
 }
