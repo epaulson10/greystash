@@ -25,10 +25,12 @@ greystash.initPopup = function() {
     console.log('Popup Instrumented.');
 
     var changePassBtn = document.getElementById('changePass');
-    // Alter the submit form's onclick behaviour t              o
+    // Alter the submit form's onclick behaviour to
     // send a  message to the background page.  
     changePassBtn.onclick = function() { 
         var extPassInput = document.getElementById('password');
+        var errOutput = document.getElementById('error');
+        errOutput.textContent = "";
 
         console.log('new ext password: ' + extPassInput.value);
 
@@ -40,9 +42,11 @@ greystash.initPopup = function() {
                   greystash.updateExtPassStatus();
             });
             extPassInput.value = "";
+            
+            // update the staleness of the user's current website
+            errOutput.textContent = 'Refresh the page for change to take effect';
         } else {
-            var err = document.getElementById('error');
-            err.textContent = 'Please enter a password'; 
+            errOutput.textContent = 'Please enter a password'; 
         }
     };
 

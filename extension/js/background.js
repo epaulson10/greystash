@@ -33,8 +33,10 @@ greystash.initPage = function(tabId, changeInfo, tab) {
     if (greystash.getRule(url) && (changeInfo.status === 'complete')) {
         chrome.pageAction.show(tabId);
 
+        var staleness = greystash.isStale(url);
+
         chrome.tabs.executeScript(tabId, {
-            code: ' greystash.initInjection(); ' 
+            code: ' greystash.initInjection(' + staleness + '); ' 
         });
     }
 };
@@ -54,18 +56,25 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
         var params = csm.generatePass;
         var url = greystash.getCanonicalURL(params.url);
 
-        greystash.getPassword(function(extPass) {
+        var callback = function(extPass) {
             console.log('Generating password:');
             console.log('  url: ' + url);
             console.log('  typed: ' + params.typed);
             console.log('  extPass: ' + extPass);
             var pass = greystash.generatePassword(url, params.typed, extPass);
             sendResponse({generatedPass : pass});
-        });
+        };
+
+        if (params.stale) {
+            greystash.getStalePass(callback, url);
+        } else {
+            greystash.getPassword(callback);
+        }
     }
     else if (csm.changeExtPass) {
         greystash.storePassword(csm.changeExtPass,
           function(result) {
+            greystash.initStaleTable();
             sendResponse({data: result});
         });
     }     
@@ -83,6 +92,11 @@ greystash.messageHandler = function(csm, sender, sendResponse) {
         greystash.getChromeSyncState(function(useChromeSync) {
             sendResponse({syncState: useChromeSync});
         });
+    }
+    else if(csm.changeStalePass){
+        console.log("Updating ext pass for webpage");
+        greystash.updateStalePass(url);
+        sendResponse();
     }
     else {
         sendResponse({farewell: "looks like we forgot a case"});

@@ -13,6 +13,8 @@ var greystash = greystash || {};
 
 // array to keep track of which sites currently have stale passwords
 greystash.staleTable = [];
+greystash.STALE = true;
+greystash.CURRENT = false;
 
 
 /*
@@ -23,6 +25,35 @@ greystash.staleTable = [];
  * stale password.  0 means the site is using the current extension password.
  */
 greystash.initStaleTable = function() {
+    //grab extpass
+    greystash.getPassword(function(extPass){
+        console.log('InitStaleTable: extPass is ', extPass);
+        //loop through all the sites
+        for (var site in greystash.rules) {
+            greystash.checkStale(site, extPass);
+        }
+    });
+}
+greystash.initStaleTable();
+
+
+//baby helper function to create a closure for initStateTable
+greystash.checkStale = function(site, extPass) {
+    greystash.getPassword(function(webPass) {
+        //if not initialized, set web password to ext password
+        if (webPass == null) {
+            greystash.storePassword(extPass, null, site);
+            greystash.staleTable[site] = greystash.CURRENT;
+        }
+        else if (webPass == extPass) {
+            greystash.staleTable[site] = greystash.CURRENT;
+        }
+        else {
+            greystash.staleTable[site] = greystash.STALE;
+        }
+        console.log('--- updated stale rule for: ', site);
+        console.log(greystash.staleTable);
+    }, site);
 }
 
 
@@ -37,7 +68,8 @@ greystash.initStaleTable = function() {
  * @return True if the site has a stale password, false otherwise
  */
 greystash.isStale = function(url) {
-    return (greystash.staleTable.url == 1);
+    var site = greystash.getSiteFromURL(url);
+    return greystash.staleTable[site];
 }
 
 
@@ -50,7 +82,9 @@ greystash.isStale = function(url) {
  * 
  * @return A string representing the stale password for the site
  */
-greystash.getStalePass = function(){
+greystash.getStalePass = function(callback, url) {
+    var site = greystash.getSiteFromURL(url);
+    greystash.getPassword(callback, site);
 }
 
 
@@ -61,8 +95,34 @@ greystash.getStalePass = function(){
  *
  * @param url The url of the site to update
  * 
- * @return True if the update was successful, false if something went wrong.
  */
 greystash.updateStalePass = function(url) {
-    return true;
+    var site = greystash.getSiteFromURL(url);
+    greystash.getPassword(function(extPass) {
+        greystash.storePassword(extPass, null, site);
+        greystash.staleTable[site] = greystash.CURRENT;
+        console.log('stale table updated:');
+        console.log(greystash.staleTable);
+    });
+}
+
+
+/*
+ * getSiteFromURL()
+ *
+ * Helper function to get the site entry from a given URL.
+ *
+ * @param url The URL of the website
+ */
+greystash.getSiteFromURL = function(url) {
+    var cURL = greystash.getCanonicalURL(url);
+    for (var site in greystash.rules) {
+        // if the url is associated with this site
+        if (greystash.rules[site].urls.indexOf(cURL) > -1) {
+            return site;
+        }
+    }
+
+    console.log('ERROR: no site found for ' + url);
+    return null;
 }

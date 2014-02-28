@@ -27,33 +27,41 @@ var greystash = greystash || {};
  * This code runs when the background page detects a page has been loaded in
  * the browser.
  */
-greystash.initInjection = function() { 
+greystash.initInjection = function(staleness) { 
 
     console.log(
-"        GREYSTASH          \n" +
-"                           \n" +
-"        . `.*.' .          \n" +
-"  . +  * .o   o.* `.`. +.  \n" +
-" *  . ' ' |\\^/|  `. * .  * \n" +
-"           \\V/             \n" +
-"You Shall  /_\\  Not Pass!  \n" +
-"          _/ \\_            \n");
+        "        GREYSTASH          \n" +
+        "                           \n" +
+        "        . `.*.' .          \n" +
+        "  . +  * .o   o.* `.`. +.  \n" +
+        " *  . ' ' |\\^/|  `. * .  * \n" +
+        "           \\V/             \n" +
+        "You Shall  /_\\  Not Pass!  \n" +
+        "          _/ \\_            \n"
+    );
+
+    // does this site have a stale password?
+    greystash.isStale = staleness;
     
     // Grab all of the forms on the page.
     var allForms = document.forms;
-    
 
     //This unfortunately ugly code adds rules to the CSS to make the clickable
     //icons work. Doing so here prevents having to hardcode the extension ID
     //in the CSS.
-    var styleCheck = $('<style>.icon-check{ background-image: url(' + chrome.extension.getURL("imgs/check.png")+ '); }</style>');
-    var styleTriangle = $('<style>.icon-triangle{ background-image: url(' + chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
-    var styleX = $('<style>.icon-x{ background-image: url(' + chrome.extension.getURL("imgs/x.png")+ '); }</style>');
-
+    var styleCheck = $('<style>.icon-check{ background-image: url(' +
+               chrome.extension.getURL("imgs/check.png")+ '); }</style>');
     $('html > head').append(styleCheck);
-    $('html > head').append(styleTriangle);
+
+    var styleX = $('<style>.icon-x{ background-image: url(' +
+                chrome.extension.getURL("imgs/x.png")+ '); }</style>');
     $('html > head').append(styleX);
 
+    if (greystash.isStale) {
+        var styleTriangle = $('<style>.icon-triangle{ background-image: url(' +
+                   chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
+        $('html > head').append(styleTriangle);
+    }
 
     //jQuery code to allow us to click on the icon in the 
     //password field to change greystash options.
@@ -78,7 +86,7 @@ greystash.initInjection = function() {
             // and alter the submit listener
             if (input.getAttribute('type') === 'password') { 
                 input.className = input.className + " icon-greystash icon-check"; 
-                }
+            }
         
             //change what the submit button does
             if (input.getAttribute('type') === 'submit') {
@@ -105,8 +113,9 @@ greystash.initInjection = function() {
  */
 greystash.processForm = function(form, button) {
     console.log('Form submitted:', form);
-    
+
     var elements = form.elements;
+    var sawGreen = false;
     var pass, passParams;
     for (var i = 0; i < elements.length; i++) {
         
@@ -115,7 +124,15 @@ greystash.processForm = function(form, button) {
             passParams = {url: document.URL, typed: pass.value};
 
             //check if we need to hash
-            if (pass && $(pass).hasClass('icon-check')) {
+            if (pass && !$(pass).hasClass('icon-x')) {
+                // are we using a stale password or the ext pass?
+                if ($(pass).hasClass('icon-triangle')) {
+                    passParams.stale = true;
+                } else {
+                    if ($(pass).hasClass('icon-check')) sawGreen = true;
+                    passParams.stale = false;
+                }
+
                 // generate the pass in the background script
                 chrome.runtime.sendMessage({generatePass: passParams}, function(response) {
                     var genPass = response.generatedPass;
@@ -124,7 +141,13 @@ greystash.processForm = function(form, button) {
                     // put new password into the form and change to do not hash,
                     // since we just did
                     pass.value = genPass;
-                    $(pass).removeClass("icon-check").addClass('icon-x');
+                    $(pass).removeClass("icon-check").removeClass("icon-triangle");
+                    $(pass).addClass('icon-x');
+
+                    // has the user changed their site password?
+                    if (greystash.isStale && sawGreen) {
+                        greystash.confirmStalePassChange();
+                    }
 
                     // attempt to resubmit the form
                     button.click();
@@ -167,12 +190,24 @@ greystash.processForm = function(form, button) {
  * @param inputField The password field whose icon is to be changed
  */
 greystash.changeIcon = function(inputField) {
-   if ($(inputField).hasClass('icon-check')) {
-      $(inputField).removeClass('icon-check').addClass('icon-x');
-   }
-   else if ($(inputField).hasClass('icon-x')) {
-      $(inputField).removeClass('icon-x').addClass('icon-check');
-   }
+    if (greystash.isStale) {
+        if ($(inputField).hasClass('icon-check')) {
+           $(inputField).removeClass('icon-check').addClass('icon-triangle');
+        }
+        else if ($(inputField).hasClass('icon-triangle')) {
+           $(inputField).removeClass('icon-triangle').addClass('icon-x');
+        }
+        else if ($(inputField).hasClass('icon-x')) {
+           $(inputField).removeClass('icon-x').addClass('icon-check');
+        }
+    } else {
+        if ($(inputField).hasClass('icon-check')) {
+           $(inputField).removeClass('icon-check').addClass('icon-x');
+        }
+        else if ($(inputField).hasClass('icon-x')) {
+           $(inputField).removeClass('icon-x').addClass('icon-check');
+        }
+    }//else
 }
 
 
@@ -201,5 +236,17 @@ greystash.checkStale = function(url) {
  * 
  * 
  */
-greystash.confirmStalePassChange = function(inputField) {
+greystash.confirmStalePassChange = function() {
+    var retVal = prompt("Did you change your password on this site?\n" +
+           "Enter Y[es] or N[o] to continue", "No");
+    var re = /^\s*[yY].*/
+
+    if(retVal ? retVal.match(re) : false){
+        chrome.runtime.sendMessage({changeStalePass: document.URL},
+            function(){
+                console.log('-- update noticed in content script');
+                greystash.isStale = false;
+            });
+    }
+
 }

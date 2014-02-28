@@ -23,21 +23,20 @@ greystash.EXT_PASS = 'extPass';
  * Reads either the extension password from file or a stale password
  * for a given URL.
  *
- * @param url The url of the site to read the stale password of. If no URL
- *            is specified, read the extension password.
+ * @param site The site to read the stale password of. If no site is specified,
+ *             read the extension password.
  @ @param callback A function that looks like: function(string){...}
  *                 This is string representing the extension or stale password
  */
-greystash.getPassword = function(callback, url) {
+greystash.getPassword = function(callback, site) {
     // what password are we getting
-    url = url || greystash.EXT_PASS;
+    site = site || greystash.EXT_PASS;
 
     // where are we getting it from
     greystash.getChromeSyncState(function(useChromeSync) {
         var storage = useChromeSync ? chrome.storage.sync : chrome.storage.local;
-
-        storage.get(url, function(data) {
-            callback(data[url]);
+        storage.get(site, function(data) {
+            callback(data[site]);
         });
     });
 }
@@ -51,22 +50,22 @@ greystash.getPassword = function(callback, url) {
  * @param text The password to write to file
  * @param callback Function that looks like: function(object){...}
                    The object contains the key:value pair that was stored
- * @param url The url of the site to write the stale password to. If no URL
- *            is specified, write the extension password.
+ * @param site The site to write the stale password to. If no site is
+ *             specified, write the extension password.
  */
-greystash.storePassword = function(text, callback, url) {
+greystash.storePassword = function(text, callback, site) {
     // what password are we storing
-    url = url || greystash.EXT_PASS;
+    site = site || greystash.EXT_PASS;
 
     // where are we storing it
     greystash.getChromeSyncState(function(useChromeSync) {
         var storage = useChromeSync ? chrome.storage.sync : chrome.storage.local;
 
         var toStore = {};
-        toStore[url] = text;
+        toStore[site] = text;
 
         storage.set(toStore, function() {
-            callback(toStore);
+            if (typeof callback === 'function') callback(toStore);
         });
     });
 }
