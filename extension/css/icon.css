@@ -2,18 +2,18 @@
   border:1px solid #999;
   padding:3px 18px 3px 4px; /* USE the same right padding in jQ! */
   border-radius:3px;
-  background-position: right 5px center;
+  background-position: right 5px center !important;
 }
 .icon-check{
-  background-repeat: no-repeat;
+  background-repeat: no-repeat !important;
 }
 
 .icon-triangle{
-  background-repeat: no-repeat;
+  background-repeat: no-repeat !important;
 
 }
 .icon-x{
-  background-repeat: no-repeat;
+  background-repeat: no-repeat !important;
 
 }
 

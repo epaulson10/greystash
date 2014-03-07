@@ -50,16 +50,16 @@ greystash.initInjection = function(staleness) {
     //icons work. Doing so here prevents having to hardcode the extension ID
     //in the CSS.
     var styleCheck = $('<style>.icon-check{ background-image: url(' +
-               chrome.extension.getURL("imgs/check.png")+ '); }</style>');
+               chrome.extension.getURL("imgs/check.png")+ ') !important; }</style>');
     $('html > head').append(styleCheck);
 
     var styleX = $('<style>.icon-x{ background-image: url(' +
-                chrome.extension.getURL("imgs/x.png")+ '); }</style>');
+                chrome.extension.getURL("imgs/x.png")+ ') !important; }</style>');
     $('html > head').append(styleX);
 
     if (greystash.isStale) {
         var styleTriangle = $('<style>.icon-triangle{ background-image: url(' +
-                   chrome.extension.getURL("imgs/triangle.png")+ '); }</style>');
+                   chrome.extension.getURL("imgs/triangle.png")+ ') !important; }</style>');
         $('html > head').append(styleTriangle);
     }
 
