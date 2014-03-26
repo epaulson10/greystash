@@ -24,17 +24,39 @@ greystash.initPopup = function() {
 
     console.log('Popup Instrumented.');
 
+    var extPassInput = document.getElementById('password');
+    var confirmDiv = document.getElementById('confirmDiv');
+    var confirmInput = document.getElementById('confirm');
+    var errOutput = document.getElementById('error');
     var changePassBtn = document.getElementById('changePass');
+    var syncData = document.getElementById('sync');
+
+    // show confirmation box when password entered
+    var toggleConfirm = function() {
+        if (extPassInput.value == "") {
+            confirmDiv.style.display = 'none';
+            confirmInput.value = "";
+        } else {
+            confirmDiv.style.display = 'block';
+        }
+    };
+    extPassInput.onkeypress = toggleConfirm;
+    extPassInput.onchange = toggleConfirm;
+    extPassInput.oninput = toggleConfirm;
+
     // Alter the submit form's onclick behaviour to
     // send a  message to the background page.  
     changePassBtn.onclick = function() { 
-        var extPassInput = document.getElementById('password');
-        var errOutput = document.getElementById('error');
         errOutput.textContent = "";
 
         console.log('new ext password: ' + extPassInput.value);
 
-        if (extPassInput.value) {
+        if (extPassInput.value == "") {
+            errOutput.textContent = 'Please enter a secret phrase'; 
+            return;
+        }
+
+        if (extPassInput.value == confirmInput.value) {
             // send a request to background page to change the extension pass
             chrome.runtime.sendMessage({changeExtPass: extPassInput.value}, 
               function(response) {
@@ -42,15 +64,15 @@ greystash.initPopup = function() {
                   greystash.updateExtPassStatus();
             });
             extPassInput.value = "";
+            toggleConfirm();
             
             // update the staleness of the user's current website
             errOutput.textContent = 'Refresh the page for change to take effect';
         } else {
-            errOutput.textContent = 'Please enter a secret phrase'; 
+            errOutput.textContent = 'Secret phrases do not match.';
         }
     };
 
-    var syncData = document.getElementById('sync');
     // Use either storage.sync if syncData is checked
     // or use storage.local if not
     syncData.onclick = function() {

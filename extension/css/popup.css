@@ -14,3 +14,7 @@ img {
 #error {
     color: red;
 }
+
+#confirmDiv {
+    display: none;
+}
