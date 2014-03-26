@@ -76,16 +76,16 @@ greystash.initRules = function() {
         max_len: 128
     };
 
-    //**** BANKS **************************************************************
+    //**** Random **************************************************************
 
-    rules['wellsfargo'] = {
-        urls: ['wellsfargo.com'],
+    rules['netflix'] = {
+        urls: ['netflix.com'],
         rule: /^(?=.{8,14}$)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\^*#!@$%&()]).*$/,
         max_len: 14
     };
 
-    rules['bankofamerica'] = {
-        urls: ['bankofamerica.com'],
+    rules['pandora'] = {
+        urls: ['pandora.com'],
         rule: /^(?=.{8,20}$)(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$/,
         max_len: 20
     };
