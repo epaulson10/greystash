@@ -50,7 +50,7 @@ greystash.generatePassword = function(url, typed, extPass){
     var loopCount = 30000;
     do {
         // 600 = number of bits to output. 600 bits == 100 base64 chars
-        var bits = sjcl.misc.pbkdf2(toHash, typed + attempt, loopCount, 600);
+        var bits = sjcl.misc.pbkdf2(toHash, typed, loopCount, 600);
 
         //convert bit array to a string using base64 encoding
         var b64 = sjcl.codec.base64.fromBits(bits);
@@ -69,8 +69,11 @@ greystash.generatePassword = function(url, typed, extPass){
         var max = greystash.getRule(url).max_len;
         if (max && pass.length > max) pass = pass.substring(0, max);
         
+		console.log("Generating Password:\n\tAttempt:" + attempt + "\t" + pass);
+		
         attempt++;
         loopCount = 1; // try passwords faster after first attempt
+		toHash = pass;//make each hash dependent on the last result
     } while (!greystash.checkRule(url, pass) && (attempt < 100));
 
     console.log(pass ?
