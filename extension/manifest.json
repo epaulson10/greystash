@@ -47,5 +47,5 @@
       "default_popup": "popup.html",
       "default_title": "Greystash"
     },
-    "web_accessible_resources": ["imgs/check.png","imgs/x.png","imgs/triangle.png"]
+    "web_accessible_resources": ["imgs/check.png","imgs/x.png","imgs/triangle.png", "imgs/greystash_icon_19.png"]
 }

@@ -56,6 +56,10 @@ greystash.initInjection = function(staleness) {
     var styleX = $('<style>.icon-x{ background-image: url(' +
                 chrome.extension.getURL("imgs/x.png")+ ') !important; }</style>');
     $('html > head').append(styleX);
+    
+    var styleWizard = $('<style>.icon-wizard{ background-image: url(' +
+                chrome.extension.getURL("imgs/greystash_icon_19.png")+ ') !important; }</style>');
+    $('html > head').append(styleWizard);
 
     if (greystash.isStale) {
         var styleTriangle = $('<style>.icon-triangle{ background-image: url(' +
@@ -124,7 +128,7 @@ greystash.processForm = function(form, button) {
             passParams = {url: document.URL, typed: pass.value};
 
             //check if we need to hash
-            if (pass && !$(pass).hasClass('icon-x')) {
+            if (pass && !$(pass).hasClass('icon-x') && !$(pass).hasClass('icon-wizard')) {
                 // are we using a stale password or the ext pass?
                 if ($(pass).hasClass('icon-triangle')) {
                     passParams.stale = true;
@@ -142,7 +146,7 @@ greystash.processForm = function(form, button) {
                     // since we just did
                     pass.value = genPass;
                     $(pass).removeClass("icon-check").removeClass("icon-triangle");
-                    $(pass).addClass('icon-x');
+                    $(pass).addClass('icon-wizard');
 
                     // has the user changed their site password?
                     if (greystash.isStale && sawGreen) {
@@ -190,6 +194,12 @@ greystash.processForm = function(form, button) {
  * @param inputField The password field whose icon is to be changed
  */
 greystash.changeIcon = function(inputField) {
+
+    //If the password submit fails, let the user get rid of the wizard
+    if ($(inputField).hasClass('icon-wizard')) {
+        $(inputField).removeClass('icon-wizard').addClass('icon-check');
+        return;
+    }
     if (greystash.isStale) {
         if ($(inputField).hasClass('icon-check')) {
            $(inputField).removeClass('icon-check').addClass('icon-triangle');

@@ -14,7 +14,9 @@
 }
 .icon-x{
   background-repeat: no-repeat !important;
-
+}
+.icon-wizard{
+  background-repeat: no-repeat !important;
 }
 
 /* (jQ addClass:) if mouse is over the 'x' input area*/
