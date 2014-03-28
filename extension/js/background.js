@@ -17,8 +17,10 @@ var greystash = greystash || {};
 // This prompts the user to set an Extension password
 greystash.onInstall = function(details) {
     chrome.tabs.create({url: 'popup.html'});
+    chrome.tabs.create({url: 'tutorial/index.html'});
     alert("Greystash loaded. \n\nEnter a new password and press " +
-          "'Change Password' to set your extension password.");
+          "'Change Password' to set your extension password. " + 
+          "Please use the tutorial if you are new to Greystash.");
 };
 chrome.runtime.onInstalled.addListener(greystash.onInstall);
 
