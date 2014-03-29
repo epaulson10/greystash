@@ -11,6 +11,10 @@ img {
     margin-right: 10px;
 }
 
+a {
+    color: #0000FF;
+}
+
 #error {
     color: red;
 }
