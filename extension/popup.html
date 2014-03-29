@@ -8,21 +8,22 @@
 <body>
     <h3>Greystash</h3>
     <div id="error"></div>
-    <form>
+    <form id="inputForm">
         <img src="imgs/green_check.png" alt="-" id="hasPassImg">
         <p id="hasPass">Secret phrase set</p>
-        <p id="prompt">Update your secret phrase: </p>
+        <p>Update your secret phrase: </p>
         <input type="password" name="password" id="password">		
         <div id="confirmDiv">
             <p>Enter it again:</p>
             <input type="password" name="confirm" id="confirm">		
+            <br><br>
         </div>
-        <input type="button" id="changePass" value="Set New Phrase"><br>
-        <br>
+        <input type="submit" id="changePass" value="Set New Phrase">
+        <br><br>
         <input type="checkbox" name="doYouEvenSync" id="sync">Sync with Chrome
     </form>
 
-    <p id="help"><a target="_blank" href="tutorial/index.html">Help</a></p>
+    <a target="_blank" href="tutorial/index.html">Help</a>
 </body>
 
 </html>

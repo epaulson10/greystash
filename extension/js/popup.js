@@ -24,11 +24,11 @@ greystash.initPopup = function() {
 
     console.log('Popup Instrumented.');
 
+    var inputForm = document.getElementById('inputForm');
     var extPassInput = document.getElementById('password');
     var confirmDiv = document.getElementById('confirmDiv');
     var confirmInput = document.getElementById('confirm');
     var errOutput = document.getElementById('error');
-    var changePassBtn = document.getElementById('changePass');
     var syncData = document.getElementById('sync');
 
     // show confirmation box when password entered
@@ -46,14 +46,14 @@ greystash.initPopup = function() {
 
     // Alter the submit form's onclick behaviour to
     // send a  message to the background page.  
-    changePassBtn.onclick = function() { 
+    inputForm.onsubmit = function() { 
         errOutput.textContent = "";
 
         console.log('new ext password: ' + extPassInput.value);
 
         if (extPassInput.value == "") {
             errOutput.textContent = 'Please enter a secret phrase'; 
-            return;
+            return false;
         }
 
         if (extPassInput.value == confirmInput.value) {
@@ -63,14 +63,15 @@ greystash.initPopup = function() {
                   console.log('saved new ext pass in storage: ' + response.data);
                   greystash.updateExtPassStatus();
             });
-            extPassInput.value = "";
-            toggleConfirm();
+            return true;
             
             // update the staleness of the user's current website
             errOutput.textContent = 'Refresh the page for change to take effect';
         } else {
             errOutput.textContent = 'Secret phrases do not match.';
         }
+
+        return false;
     };
 
     // Use either storage.sync if syncData is checked
