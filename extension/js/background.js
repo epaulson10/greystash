@@ -18,8 +18,8 @@ var greystash = greystash || {};
 greystash.onInstall = function(details) {
     chrome.tabs.create({url: 'popup.html'});
     chrome.tabs.create({url: 'tutorial/index.html'});
-    alert("Greystash loaded. \n\nEnter a new password and press " +
-          "'Change Password' to set your extension password. " + 
+    alert("Greystash loaded. \n\nEnter a new secret phrase and press " +
+          "'Set New Phrase' to get started.\n\n" + 
           "Please use the tutorial if you are new to Greystash.");
 };
 chrome.runtime.onInstalled.addListener(greystash.onInstall);
