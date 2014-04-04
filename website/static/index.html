@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Greystash | web</title>
+    <script src="extension/password.js"></script>
+    <script src="extension/rules.js"></script>
+    <script src="extension/sjcl.js"></script>
+    <script src="controller.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Greystash</h1>
+    <small>Secure Passwords Made Easy</small><br>
+    <br>
+    <form>
+        Website: <input type="text" name="Site" id="site"><br>
+        Password: <input type="password" name="Site Password" id="site_pass"><br>
+        Secret phrase: <input type="password" name="Extension Password" id="ext_pass"><br>
+        <br>
+        <input type="button" id="generate" value="Generate Password"><br>
+        <br>
+        <div id="output"></div>
+    </form>
+    <br>
+    <a href="../greystash.crx">Download Chrome extension</a>
+    <a href="https://chrome.google.com/webstore/detail/greystash/aojmpeobejcomhfbhigogffcbeefoleh">Get it on the Chrome Web Store</a>
+</body>
+</html>

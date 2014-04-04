@@ -6,7 +6,7 @@ greystash.webGenerate = function() {
     var site = greystash.getCanonicalURL(document.getElementById('site').value)
     var sitePass = document.getElementById('site_pass').value;
     var extPass = document.getElementById('ext_pass').value;
-
+    
     out.innerHTML = greystash.generatePassword(site, sitePass, extPass);
 }
 
